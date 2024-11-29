@@ -66,7 +66,7 @@ extension db {
             }
         }
 
-        public func modified(_ columns: [Column], _ tx: Tx) -> Bool {
+        public func isModified(_ columns: [Column], _ tx: Tx) -> Bool {
             for c in columns {
                 let l = self[c]
                 let r = tx[self, c]
@@ -77,7 +77,7 @@ extension db {
             return false
         }
 
-        public func stored(_ columns: [Column], _ tx: Tx) -> Bool {
+        public func isStored(_ columns: [Column], _ tx: Tx) -> Bool {
             for c in columns {
                 if tx[self, c] != nil {
                     return true

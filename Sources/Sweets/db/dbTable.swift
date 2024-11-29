@@ -66,7 +66,7 @@ extension db {
         }
 
         public func upsert(_ rec: Record, _ tx: Tx) async throws {
-            if rec.stored(_columns, tx) { try await update(rec, tx) }
+            if rec.isStored(_columns, tx) { try await update(rec, tx) }
             else { try await insert(rec, tx) }
         }
 

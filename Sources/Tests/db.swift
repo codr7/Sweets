@@ -128,18 +128,18 @@ extension db {
         try! await tx.commit()
         tx = try! await cx.startTx()
 
-        assert(!rec.stored(tbl.columns, tx))
-        assert(rec.modified(tbl.columns, tx))
+        assert(!rec.isStored(tbl.columns, tx))
+        assert(rec.isModified(tbl.columns, tx))
         try! await tbl.upsert(rec, tx)
-        assert(rec.stored(tbl.columns, tx))
-        assert(!rec.modified(tbl.columns, tx))
+        assert(rec.isStored(tbl.columns, tx))
+        assert(!rec.isModified(tbl.columns, tx))
 
         rec[intCol] = 2
         assert(rec[intCol]! == 2)
-        assert(rec.modified(tbl.columns, tx))
+        assert(rec.isModified(tbl.columns, tx))
         try! await tbl.upsert(rec, tx)
-        assert(rec.stored(tbl.columns, tx))
-        assert(!rec.modified(tbl.columns, tx))
+        assert(rec.isStored(tbl.columns, tx))
+        assert(!rec.isModified(tbl.columns, tx))
 
         try! await scm.drop(tx)
         try! await tx.commit()
