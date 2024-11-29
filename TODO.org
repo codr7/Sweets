@@ -1,0 +1,32 @@
+* grep public var
+
+* add input
+* add select from gappkit
+* add button with onclick
+
+* add nested transaction support
+** hostr
+* add indexes
+* add sequences
+* finish Query
+** add result functionality
+*** fetch(inout record)
+* add models
+** hostr
+
+enum RepeatMode {
+  case times(Int)
+  case forever
+}
+
+extension RepeatMode {
+  static var once: Self { .times(1) }
+  static var never: Self { .times(0) }
+}
+
+CREATE USER swisql
+ALTER USER swisql WITH ENCRYPTED PASSWORD 'swisql';
+GRANT ALL PRIVILEGES ON DATABASE swisql TO swisql;
+
+sudo -u postgres psql
+/usr/pgadmin4/bin/pgadmin4 &
