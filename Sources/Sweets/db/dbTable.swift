@@ -1,8 +1,8 @@
 extension db {
     public class Table: BasicDefinition, Definition, Source {
         var definitions: [any TableDefinition] = []
-        var _columns: [any Column] = []
-        public var columns: [Column] { _columns }
+        var _columns: [IColumn] = []
+        public var columns: [IColumn] { _columns }
         var foreignKeys: [ForeignKey] = []
         lazy var primaryKey: Key = Key("\(name)PrimaryKey", _columns.filter {$0.primaryKey})
         public var sourceSql: String { nameSql }

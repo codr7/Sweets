@@ -1,13 +1,13 @@
 extension db {
     public protocol Constraint: TableDefinition {
-        var columns: [any Column] {get}
+        var columns: [IColumn] {get}
         var constraintType: String {get}
     }
 
     public class BasicConstraint: BasicTableDefinition {
-        public let columns: [any Column]
+        public let columns: [IColumn]
 
-        public init(_ name: String, _ columns: [any Column]) {
+        public init(_ name: String, _ columns: [IColumn]) {
             let table = columns[0].table
 
             for c in columns[1...] {

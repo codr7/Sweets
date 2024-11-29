@@ -2,14 +2,16 @@ import Foundation
 import PostgresNIO
 
 extension db {
-    public protocol Column: Value, TableDefinition {
+    public typealias Column<T> = BasicColumn<T> & IColumn where T: Equatable
+    
+    public protocol IColumn: Value, TableDefinition {
         var columnType: String {get}
         var id: ObjectIdentifier {get}
         var nullable: Bool {get}
         var primaryKey: Bool {get}
         
         func clone(_ name: String, _ table: Table,
-                   nullable: Bool, primaryKey: Bool) -> Column
+                   nullable: Bool, primaryKey: Bool) -> IColumn
         func equalValues(_ left: Any, _ right: Any) -> Bool
     }
 
@@ -55,7 +57,7 @@ extension db {
         public var valueParams: [any Encodable] { [] }
     }
 
-    public class BoolColumn: BasicColumn<Bool>, Column {
+    public class BoolColumn: Column<Bool> {
         public override init(_ name: String, _ table: Table,
                              nullable: Bool = false, primaryKey: Bool = false) {
             super.init(name, table, nullable: nullable, primaryKey: primaryKey)
@@ -66,12 +68,12 @@ extension db {
         public let columnType = "BOOLEAN"
 
         public func clone(_ name: String, _ table: Table,
-                          nullable: Bool, primaryKey: Bool) -> Column {
+                          nullable: Bool, primaryKey: Bool) -> IColumn {
             BoolColumn(name, table, nullable: nullable, primaryKey: primaryKey)
         }
     }
 
-    public class DateColumn: BasicColumn<Date>, Column {
+    public class DateColumn: Column<Date> {
         public override init(_ name: String, _ table: Table,
                              nullable: Bool = false, primaryKey: Bool = false) {
             super.init(name, table, nullable: nullable, primaryKey: primaryKey)
@@ -82,12 +84,12 @@ extension db {
         public let columnType = "TIMESTAMPTZ"
 
         public func clone(_ name: String, _ table: Table,
-                          nullable: Bool, primaryKey: Bool) -> Column {
+                          nullable: Bool, primaryKey: Bool) -> IColumn {
             DateColumn(name, table, nullable: nullable, primaryKey: primaryKey)
         }
     }
 
-    public class DecimalColumn: BasicColumn<Decimal>, Column {
+    public class DecimalColumn: Column<Decimal> {
         let precision: Int
         
         public init(_ name: String, _ table: Table,
@@ -103,7 +105,7 @@ extension db {
         public var columnType: String { "DECIMAL(\(precision))" }
 
         public func clone(_ name: String, _ table: Table,
-                          nullable: Bool, primaryKey: Bool) -> Column {
+                          nullable: Bool, primaryKey: Bool) -> IColumn {
             DecimalColumn(name, table,
                           nullable: nullable,
                           primaryKey: primaryKey,
@@ -111,7 +113,7 @@ extension db {
         }
     }
 
-    public class EnumColumn<T: Enum>: BasicColumn<T>, Column where T.RawValue == String {
+    public class EnumColumn<T: Enum>: Column<T> where T.RawValue == String {
         public let type: EnumType<T>
 
         public override init(_ name: String, _ table: Table,
@@ -126,7 +128,7 @@ extension db {
 
         public override var paramSql: String { "?::\(type.nameSql)" }
         
-        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> Column {
+        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> IColumn {
             EnumColumn<T>(name, table, nullable: nullable, primaryKey: primaryKey)
         }
 
@@ -148,7 +150,7 @@ extension db {
         }
     }
 
-    public class IntColumn: BasicColumn<Int>, Column {
+    public class IntColumn: Column<Int> {
         public override init(_ name: String, _ table: Table, nullable: Bool = false, primaryKey: Bool = false) {
             super.init(name, table, nullable: nullable, primaryKey: primaryKey)
             table.definitions.append(self)
@@ -157,12 +159,12 @@ extension db {
 
         public let columnType = "INTEGER"
 
-        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool) -> Column {
+        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool) -> IColumn {
             IntColumn(name, table, nullable: nullable, primaryKey: primaryKey)
         }
     }
 
-    public class StringColumn: BasicColumn<String>, Column {
+    public class StringColumn: Column<String> {
         public override init(_ name: String, _ table: Table, nullable: Bool = false, primaryKey: Bool = false) {
             super.init(name, table, nullable: nullable, primaryKey: primaryKey)
             table.definitions.append(self)
@@ -171,14 +173,14 @@ extension db {
 
         public let columnType = "TEXT"
 
-        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> Column {
+        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> IColumn {
             StringColumn(name, table, nullable: nullable, primaryKey: primaryKey)
         }
     }
 
 }
 
-public extension db.Column {
+public extension db.IColumn {
     var createSql: String {
         var sql = "\(db.createSql(self as db.TableDefinition)) \(columnType)"
         if primaryKey || !nullable { sql += " NOT NULL" }
@@ -189,7 +191,7 @@ public extension db.Column {
     var valueSql: String { "\(table.nameSql).\(nameSql)" }
 }
 
-extension [any db.Column] {
+extension [any db.IColumn] {
     var sql: String {
         self.map({$0.nameSql}).joined(separator: ", ")
     }

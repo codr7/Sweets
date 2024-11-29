@@ -1,10 +1,10 @@
 extension db {
-    public typealias Field = (Column, Any)
+    public typealias Field = (IColumn, Any)
 
     public class Record {
         public var fields: [Field] {_fields.items}
         
-        var _fields = OrderedSet({(l: Column, r: Field) -> Order in
+        var _fields = OrderedSet({(l: IColumn, r: Field) -> Order in
                                      let t = compare(ObjectIdentifier(l.table),
                                                      ObjectIdentifier(r.0.table))
                                      
@@ -21,7 +21,7 @@ extension db {
             _fields.count
         }
 
-        public subscript<T>(column: BasicColumn<T> & Column) -> T? {
+        public subscript<T>(column: Column<T>) -> T? {
             get {
                 if let f = _fields[column] { (f.1 as! T) } else { nil }
             }
@@ -34,7 +34,7 @@ extension db {
             }
         }
 
-        public subscript(column: any Column) -> Any? {
+        public subscript(column: IColumn) -> Any? {
             get {
                 if let f = _fields[column] { f.1 } else { nil }
             }
@@ -66,7 +66,7 @@ extension db {
             }
         }
 
-        public func isModified(_ columns: [Column], _ cx: Cx) -> Bool {
+        public func isModified(_ columns: [IColumn], _ cx: Cx) -> Bool {
             let tx = (cx.peekTx() ?? cx)
 
             for c in columns {
@@ -79,7 +79,7 @@ extension db {
             return false
         }
 
-        public func isStored(_ columns: [Column], _ cx: Cx) -> Bool {
+        public func isStored(_ columns: [IColumn], _ cx: Cx) -> Bool {
             let tx = (cx.peekTx() ?? cx)
             return columns.contains(where: {tx[self, $0] != nil})
         }

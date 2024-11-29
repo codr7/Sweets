@@ -5,9 +5,9 @@ extension db {
         }
         
         let record: Record
-        let column: any Column
+        let column: any IColumn
         
-        init(_ record: Record, _ column: any Column) {
+        init(_ record: Record, _ column: any IColumn) {
             self.record = record
             self.column = column
         }
@@ -21,7 +21,7 @@ extension db {
     public class ValueStore {
         var storedValues: [ValueKey: Any] = [:]
 
-        public subscript(record: Record, column: any Column) -> Any? {
+        public subscript(record: Record, column: any IColumn) -> Any? {
             get { storedValues[ValueKey(record, column)] }
             set(value) { storedValues[ValueKey(record, column)] = value }
         }

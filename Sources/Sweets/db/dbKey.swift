@@ -1,6 +1,6 @@
 extension db {
     public class Key: BasicConstraint, Constraint {
-        public override init(_ name: String, _ columns: [any Column]) {
+        public override init(_ name: String, _ columns: [IColumn]) {
             super.init(name, columns)
             self.table.definitions.append(self)
         }

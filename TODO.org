@@ -1,3 +1,8 @@
+* döp om primaryKey till isPrimaryKey
+** Column
+
+* döp om nullable till isNullable
+
 * dom
 ** add input
 ** add select from gappkit

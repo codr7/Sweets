@@ -6,18 +6,18 @@ extension db {
         }
         
         let foreignTable: Table
-        let foreignColumns: [any Column]
+        let foreignColumns: [IColumn]
         let onUpdate: Action
         let onDelete: Action
         
-        public init(_ name: String, _ table: Table, _ foreignColumns: [any Column],
+        public init(_ name: String, _ table: Table, _ foreignColumns: [IColumn],
                     nullable: Bool = false, primaryKey: Bool = false,
                     onUpdate: Action = .cascade, onDelete: Action = .restrict) {
             self.onUpdate = onUpdate
             self.onDelete = onDelete
             foreignTable = foreignColumns[0].table
             self.foreignColumns = foreignColumns
-            var columns: [Column] = []
+            var columns: [IColumn] = []
 
             for fc in foreignColumns {
                 if fc.table !== foreignTable {
