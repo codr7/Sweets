@@ -18,16 +18,16 @@ extension db {
 
         public var dropSql: String { db.dropSql(self) }
         
-        public func create(_ tx: Tx) async throws {
-            try await tx.exec(self.createSql)
+        public func create(_ cx: Cx) async throws {
+            try await cx.exec(self.createSql)
 
             for m in T.allCases {
-                try await EnumMember(self, m.rawValue).create(tx)
+                try await EnumMember(self, m.rawValue).create(cx)
             }
         }
 
-        public func exists(_ tx: Tx) async throws -> Bool {
-            try await tx.queryValue("""
+        public func exists(_ cx: Cx) async throws -> Bool {
+            try await cx.queryValue("""
                                       SELECT EXISTS (
                                       SELECT FROM pg_type
                                       WHERE typname  = \(name)
@@ -35,13 +35,13 @@ extension db {
                                       """)
         }    
 
-        public func sync(_ tx: Tx) async throws {        
-            if (try await exists(tx)) {
+        public func sync(_ cx: Cx) async throws {        
+            if (try await exists(cx)) {
                 for m in T.allCases {
-                    try await EnumMember<T>(self, m.rawValue).sync(tx)
+                    try await EnumMember<T>(self, m.rawValue).sync(cx)
                 }
             } else {
-                try await create(tx)
+                try await create(cx)
             }
         }
     }
@@ -66,8 +66,8 @@ extension db {
             "ALTER TYPE \(type.nameSql) DROP VALUE '\(name)'"
         }
 
-        public func exists(_ tx: Tx) async throws -> Bool {
-            try await tx.queryValue("""
+        public func exists(_ cx: Cx) async throws -> Bool {
+            try await cx.queryValue("""
                                       SELECT EXISTS (
                                       SELECT
                                       FROM pg_type t 

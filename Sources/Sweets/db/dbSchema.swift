@@ -2,25 +2,18 @@ extension db {
     public class Schema {
         var definitions: [Definition] = []
 
-        public init() {
+        public init() {}
+        
+        public func create(_ cx: Cx) async throws {
+            for d in definitions { try await d.create(cx) }
         }
         
-        public func create(_ tx: Tx) async throws {
-            for d in definitions {
-                try await d.create(tx)
-            }
+        public func drop(_ cx: Cx) async throws {
+            for d in definitions { try await d.drop(cx) }
         }
         
-        public func drop(_ tx: Tx) async throws {
-            for d in definitions {
-                try await d.drop(tx)
-            }
-        }
-        
-        public func sync(_ tx: Tx) async throws {
-            for d in definitions {
-                try await d.sync(tx)
-            }
+        public func sync(_ cx: Cx) async throws {
+            for d in definitions { try await d.sync(cx) }
         }
     }
 }

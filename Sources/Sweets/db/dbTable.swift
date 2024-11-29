@@ -16,14 +16,14 @@ extension db {
         public let definitionType = "TABLE"
         public var dropSql: String { db.dropSql(self) }
 
-        public func create(_ tx: Tx) async throws {
-            try await tx.exec(createSql)
+        public func create(_ cx: Cx) async throws {
+            try await cx.exec(createSql)
             _ = primaryKey
-            for d in definitions {try await d.create(tx)}
+            for d in definitions {try await d.create(cx)}
         }
 
-        public func exists(_ tx: Tx) async throws -> Bool {
-            try await tx.queryValue("""
+        public func exists(_ cx: Cx) async throws -> Bool {
+            try await cx.queryValue("""
                                       SELECT EXISTS (
                                       SELECT FROM pg_tables
                                       WHERE tablename  = \(name)
@@ -31,7 +31,7 @@ extension db {
                                       """)
         }
 
-        public func insert(_ rec: Record, _ tx: Tx) async throws {
+        public func insert(_ rec: Record, _ cx: Cx) async throws {
             let cvs = _columns.map({($0, rec[$0])}).filter({$0.1 != nil})
 
             let sql = """
@@ -39,16 +39,17 @@ extension db {
               VALUES (\(cvs.map({$0.0.paramSql}).joined(separator: ", ")))
               """
 
-            try await tx.exec(sql, cvs.map {$0.0.encode($0.1!)})
-            for cv in cvs {tx[rec, cv.0] = cv.1}
+            try await cx.exec(sql, cvs.map {$0.0.encode($0.1!)})
+            let tx = cx.peekTx()!
+            for cv in cvs { tx[rec, cv.0] = cv.1 }
         }
 
-        public func update(_ rec: Record, _ tx: Tx) async throws {
+        public func update(_ rec: Record, _ cx: Cx) async throws {
             let cvs = _columns.map({($0, rec[$0])}).filter({$0.1 != nil})
             var wcs: [Condition] = []
 
             for c in primaryKey.columns {
-                let v = tx[rec, c] ?? rec[c]
+                let v = cx[rec, c] ?? rec[c]
                 if v == nil { throw BasicError("Missing key: \(c)") }
                 wcs.append(c == v!)
             }
@@ -61,20 +62,21 @@ extension db {
               WHERE \(w.conditionSql)
               """
 
-            try await tx.exec(sql, cvs.map({$0.0.encode($0.1!)}) + w.conditionParams)
+            try await cx.exec(sql, cvs.map({$0.0.encode($0.1!)}) + w.conditionParams)
+            let tx = cx.peekTx()!
             for cv in cvs {tx[rec, cv.0] = cv.1}
         }
 
-        public func upsert(_ rec: Record, _ tx: Tx) async throws {
-            if rec.isStored(_columns, tx) { try await update(rec, tx) }
-            else { try await insert(rec, tx) }
+        public func store(_ rec: Record, _ cx: Cx) async throws {
+            if rec.isStored(_columns, cx) { try await update(rec, cx) }
+            else { try await insert(rec, cx) }
         }
 
-        public func sync(_ tx: Tx) async throws {
-            if (try await exists(tx)) {
-                for d in definitions { try await d.sync(tx) }
+        public func sync(_ cx: Cx) async throws {
+            if (try await exists(cx)) {
+                for d in definitions { try await d.sync(cx) }
             } else {
-                try await create(tx)
+                try await create(cx)
             }
         }
     }

@@ -1,13 +1,4 @@
 import Sweets
 
-/*
-@main
-struct Main {
-    static func main() {
-        db.runTests()
-        dom.runTests()
-    }
-}*/
-
-await db.runTests()
+try await db.runTests()
 dom.runTests()

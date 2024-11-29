@@ -10,7 +10,7 @@ extension db {
         
         func clone(_ name: String, _ table: Table,
                    nullable: Bool, primaryKey: Bool) -> Column
-        func equal(_ left: Any, _ right: Any) -> Bool
+        func equalValues(_ left: Any, _ right: Any) -> Bool
     }
 
     public class BasicColumn<T: Equatable>: BasicTableDefinition {
@@ -36,12 +36,12 @@ extension db {
             value as! any Encodable
         }
 
-        public func equal(_ left: Any, _ right: Any) -> Bool {
+        public func equalValues(_ left: Any, _ right: Any) -> Bool {
             return left as! T == right as! T
         }
         
-        public func exists(_ tx: Tx) async throws -> Bool {
-            try await tx.queryValue("""
+        public func exists(_ cx: Cx) async throws -> Bool {
+            try await cx.queryValue("""
                                       SELECT EXISTS (
                                       SELECT
                                       FROM pg_attribute 
@@ -130,21 +130,21 @@ extension db {
             EnumColumn<T>(name, table, nullable: nullable, primaryKey: primaryKey)
         }
 
-        public func create(_ tx: Tx) async throws {
-            if !(try await type.exists(tx)) {
-                try await type.create(tx)
+        public func create(_ cx: Cx) async throws {
+            if !(try await type.exists(cx)) {
+                try await type.create(cx)
             }
             
-            try await tx.exec(self.createSql)
+            try await cx.exec(self.createSql)
         }
 
         public override func encode(_ value: Any) -> any Encodable {
             (value as! T).rawValue
         }
 
-        public func sync(_ tx: Tx) async throws {
-            try await type.sync(tx)
-            if !(try await exists(tx)) { try await create(tx) }
+        public func sync(_ cx: Cx) async throws {
+            try await type.sync(cx)
+            if !(try await exists(cx)) { try await create(cx) }
         }
     }
 

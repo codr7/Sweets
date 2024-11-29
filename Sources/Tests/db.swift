@@ -3,8 +3,10 @@ import PostgresNIO
 import Sweets;
 
 extension db {
-    static func getCx() -> Cx {
-        Cx(database: "sweets", user: "sweets", password: "sweets")
+    static func getCx() async throws -> Cx {
+        let cx = Cx(database: "sweets", user: "sweets", password: "sweets")
+        try await cx.connect()
+        return cx
     }
     
     static func conditionTests() {
@@ -16,7 +18,7 @@ extension db {
         assert(c.conditionSql == "(\(col.valueSql) = ?) OR (\(col.valueSql) = ?)")
     }
     
-    static func foreignKeyTests() async {
+    static func foreignKeyTests() async throws {
         let scm = Schema()
         let tbl1 = Table(scm, "tbl1")
         let col1 = IntColumn("col", tbl1, primaryKey: true)
@@ -24,18 +26,44 @@ extension db {
         let tbl2 = Table(scm, "tbl2")
         _ = ForeignKey("fkey", tbl2, [col1], primaryKey: true)
         
-        let cx = getCx()
-        try! await cx.connect()
+        let cx = try await getCx()
+        var tx = try await cx.startTx()
+        try await scm.create(cx)
+        try await tx.rollback()
         
-        var tx = try! await cx.startTx()
-        try! await scm.create(tx)
-        try! await tx.rollback()
+        tx = try await cx.startTx()
+        try await scm.sync(cx)
+        try await tx.rollback()
         
-        tx = try! await cx.startTx()
-        try! await scm.sync(tx)
-        try! await tx.rollback()
+        try await cx.disconnect()
+    }
+
+    class TestModel: Model {
+        let tables: [Table]
         
-        try! await cx.disconnect()
+        init(_ cx: Cx, _ tables: [Table], _ record: Record? = nil) {
+            self.tables = tables
+            super.init(cx, record)
+        }
+    }
+
+    static func modelTests() async throws {
+        let scm = Schema()
+        let tbl1 = Table(scm, "tbl1")
+        let col1 = IntColumn("col", tbl1, primaryKey: true)
+
+        let cx = try await getCx()
+        let tx = try await cx.startTx()
+        try await scm.sync(cx)
+        let m = TestModel(cx, [tbl1])
+        assert(!m.isModified)
+        m.record[col1] = 42
+        assert(m.isModified)
+        try await m.store()
+        assert(!m.isModified)
+
+        try await tx.rollback()
+        try await cx.disconnect()
     }
     
     static func orderedSetTests() {
@@ -64,7 +92,7 @@ extension db {
         assert(s[3] == 3)
     }
     
-    static func queryTests() async {
+    static func queryTests() async throws {
         let scm = Schema()
         let tbl = Table(scm, "tbl")
         let col1 = StringColumn("col1", tbl, primaryKey: true)
@@ -74,12 +102,12 @@ extension db {
         q.select(col1, col2)
         q.from(tbl)
         q.filter(col1 == "foo")
-        let cx = getCx()
-        try! await cx.connect()
-        let tx = try! await cx.startTx()
-        try! await scm.sync(tx)
-        try! await q.exec(tx)
-        try! await cx.disconnect()
+        let cx = try await getCx()
+        let tx = try await cx.startTx()
+        try await scm.sync(cx)
+        try await q.exec(cx)
+        try await tx.rollback()
+        try await cx.disconnect()
     }
     
     enum TestEnum: String, Enum {
@@ -88,7 +116,7 @@ extension db {
         case baz = "baz"
     }
     
-    static func recordTests() async {
+    static func recordTests() async throws {
         let scm = Schema()
         let tbl = Table(scm, "tbl")
         let boolCol = BoolColumn("bool", tbl)
@@ -121,36 +149,35 @@ extension db {
         
         assert(rec.count == 6)
         
-        let cx = getCx()
-        try! await cx.connect()
-        var tx = try! await cx.startTx()
-        try! await scm.sync(tx)
-        try! await tx.commit()
-        tx = try! await cx.startTx()
+        let cx = try await getCx()
+        var tx = try await cx.startTx()
+        try await scm.sync(cx)
+        try await tx.commit()
+        tx = try await cx.startTx()
 
-        assert(!rec.isStored(tbl.columns, tx))
-        assert(rec.isModified(tbl.columns, tx))
-        try! await tbl.upsert(rec, tx)
-        assert(rec.isStored(tbl.columns, tx))
-        assert(!rec.isModified(tbl.columns, tx))
+        assert(!rec.isStored(tbl.columns, cx))
+        assert(rec.isModified(tbl.columns, cx))
+        try await tbl.store(rec, cx)
+        assert(rec.isStored(tbl.columns, cx))
+        assert(!rec.isModified(tbl.columns, cx))
 
         rec[intCol] = 2
         assert(rec[intCol]! == 2)
-        assert(rec.isModified(tbl.columns, tx))
-        try! await tbl.upsert(rec, tx)
-        assert(rec.isStored(tbl.columns, tx))
-        assert(!rec.isModified(tbl.columns, tx))
+        assert(rec.isModified(tbl.columns, cx))
+        try await tbl.store(rec, cx)
+        assert(rec.isStored(tbl.columns, cx))
+        assert(!rec.isModified(tbl.columns, cx))
 
-        try! await scm.drop(tx)
-        try! await tx.commit()
-        try! await cx.disconnect()
+        try await scm.drop(cx)
+        try await tx.commit()
+        try await cx.disconnect()
     }
 
-    static func runTests() async {
+    static func runTests() async throws {
         conditionTests()
-        await foreignKeyTests()
+        try await foreignKeyTests()
         orderedSetTests()
-        await queryTests()
-        await recordTests()
+        try await queryTests()
+        try await recordTests()
     }
 }

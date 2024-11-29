@@ -54,8 +54,8 @@ extension db {
             sql
         }
 
-        public func exec(_ tx: Tx) async throws {
-            _ = try await tx.query(valueSql, valueParams)
+        public func exec(_ cx: Cx) async throws {
+            _ = try await cx.query(valueSql, valueParams)
         }
 
         public func filter(_ args: Condition...) {

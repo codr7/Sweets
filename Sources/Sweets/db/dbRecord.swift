@@ -66,25 +66,22 @@ extension db {
             }
         }
 
-        public func isModified(_ columns: [Column], _ tx: Tx) -> Bool {
+        public func isModified(_ columns: [Column], _ cx: Cx) -> Bool {
+            let tx = (cx.peekTx() ?? cx)
+
             for c in columns {
                 let l = self[c]
                 let r = tx[self, c]
                 if l == nil && r == nil  { continue }
-                if l == nil || r == nil || !c.equal(l!, r!) { return true }
+                if l == nil || r == nil || !c.equalValues(l!, r!) { return true }
             }
 
             return false
         }
 
-        public func isStored(_ columns: [Column], _ tx: Tx) -> Bool {
-            for c in columns {
-                if tx[self, c] != nil {
-                    return true
-                }
-            }
-
-            return false
+        public func isStored(_ columns: [Column], _ cx: Cx) -> Bool {
+            let tx = (cx.peekTx() ?? cx)
+            return columns.contains(where: {tx[self, $0] != nil})
         }
     }
 }

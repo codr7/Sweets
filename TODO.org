@@ -7,7 +7,6 @@
 ** add nio http server
 
 * db
-** add models
 *** hostr
 ** add indexes
 ** add sequences

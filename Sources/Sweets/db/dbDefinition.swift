@@ -7,10 +7,10 @@ extension db {
         var schema: Schema {get}
         var nameSql: String {get}
         
-        func create(_ tx: Tx) async throws
-        func drop(_ tx: Tx) async throws
-        func sync(_ tx: Tx) async throws
-        func exists(_ tx: Tx) async throws -> Bool
+        func create(_ cx: Cx) async throws
+        func drop(_ cx: Cx) async throws
+        func sync(_ cx: Cx) async throws
+        func exists(_ cx: Cx) async throws -> Bool
     }
 
     public class BasicDefinition {
@@ -37,17 +37,17 @@ extension db {
 }
 
 public extension db.Definition {
-    func create(_ tx: db.Tx) async throws {
-        try await tx.exec(self.createSql)
+    func create(_ cx: db.Cx) async throws {
+        try await cx.exec(self.createSql)
     }
 
-    func drop(_ tx: db.Tx) async throws {
-        try await tx.exec(self.dropSql)
+    func drop(_ cx: db.Cx) async throws {
+        try await cx.exec(self.dropSql)
     }
 
-    func sync(_ tx: db.Tx) async throws {
-        if !(try await exists(tx)) {
-            try await create(tx)
+    func sync(_ cx: db.Cx) async throws {
+        if !(try await exists(cx)) {
+            try await create(cx)
         }
     }
 }

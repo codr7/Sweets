@@ -50,19 +50,48 @@ extension db {
             connection = nil
         }
 
+        public func exec(_ sql: String, _ params: [any Encodable] = []) async throws {
+            let psql = convertParams(sql)
+            print("\(psql)\n")
+            var bs = PostgresBindings()
+            for p in params { bs.append(p) }
+            try await connection!.query(PostgresQuery(unsafeSQL: psql, binds: bs), logger: log)
+        }
+
+        public func query(_ sql: String, _ params: [any Encodable] = []) async throws {
+            let psql = convertParams(sql)
+            print("\(psql)\n")
+            var bs = PostgresBindings()
+            for p in params { bs.append(p) }
+            try await connection!.query(PostgresQuery(unsafeSQL: psql, binds: bs), logger: log)
+        }
+
+        public func query(_ query: PostgresQuery) async throws -> PostgresRowSequence {
+            print("\(query.sql)\n")
+            return try await connection!.query(query, logger: log)
+        }
+
+        public func queryValue<T: PostgresDecodable>(_ query: PostgresQuery) async throws -> T {
+            print("\(query.sql)\n")
+            let rows = try await connection!.query(query, logger: log)
+            for try await (value) in rows.decode((T).self) { return value }
+            throw BasicError("No rows")
+        }
+
         private func _startTx() async throws -> Tx {
             if txStack.isEmpty {
                 let tx = Tx(self)
-                try await tx.exec("BEGIN")
+                try await exec("BEGIN")
                 return tx
             }
 
             let sp = Cx.makeSavepoint()
             let tx = Tx(self, sp)
-            try await tx.exec("SAVEPOINT \(sp)")
+            try await exec("SAVEPOINT \(sp)")
             return tx
         }
-        
+
+        @discardableResult
         public func startTx() async throws -> Tx {
             let tx = try await _startTx()
             txStack.append(tx)
