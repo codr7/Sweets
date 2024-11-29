@@ -12,10 +12,8 @@ extension db {
             schema.definitions.append(self)
         }
         
-        public var definitionType: String { "TABLE" }
-
         public var createSql: String { "\(db.createSql(self)) ()" }
-
+        public let definitionType = "TABLE"
         public var dropSql: String { db.dropSql(self) }
 
         public func create(_ tx: Tx) async throws {

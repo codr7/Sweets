@@ -14,7 +14,7 @@ extension db {
             "\(db.createSql(self as Definition)) AS ENUM ()"
         }
 
-        public var definitionType: String { "TYPE" }
+        public let definitionType = "TYPE"
 
         public var dropSql: String { db.dropSql(self) }
         

@@ -24,7 +24,7 @@ extension db {
             super.init(name, table)
         }
         
-        public var definitionType = "COLUMN"
+        public let definitionType = "COLUMN"
         
         public var id: ObjectIdentifier {
             ObjectIdentifier(self)
@@ -63,7 +63,7 @@ extension db {
             table._columns.append(self)
         }
         
-        public var columnType = "BOOLEAN"
+        public let columnType = "BOOLEAN"
 
         public func clone(_ name: String, _ table: Table,
                           nullable: Bool, primaryKey: Bool) -> Column {
@@ -79,7 +79,7 @@ extension db {
             table._columns.append(self)
         }
 
-        public var columnType = "TIMESTAMPTZ"
+        public let columnType = "TIMESTAMPTZ"
 
         public func clone(_ name: String, _ table: Table,
                           nullable: Bool, primaryKey: Bool) -> Column {
@@ -155,7 +155,7 @@ extension db {
             table._columns.append(self)
         }
 
-        public var columnType = "INTEGER"
+        public let columnType = "INTEGER"
 
         public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool) -> Column {
             IntColumn(name, table, nullable: nullable, primaryKey: primaryKey)
@@ -169,7 +169,7 @@ extension db {
             table._columns.append(self)
         }
 
-        public var columnType = "TEXT"
+        public let columnType = "TEXT"
 
         public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> Column {
             StringColumn(name, table, nullable: nullable, primaryKey: primaryKey)

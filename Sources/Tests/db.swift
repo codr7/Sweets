@@ -3,6 +3,10 @@ import PostgresNIO
 import Sweets;
 
 extension db {
+    static func getCx() -> Cx {
+        Cx(database: "sweets", user: "sweets", password: "sweets")
+    }
+    
     static func conditionTests() {
         let scm = Schema()
         let tbl = Table(scm, "tbl")
@@ -20,7 +24,7 @@ extension db {
         let tbl2 = Table(scm, "tbl2")
         _ = ForeignKey("fkey", tbl2, [col1], primaryKey: true)
         
-        let cx = Cx(database: "swisql", user: "swisql", password: "swisql")
+        let cx = getCx()
         try! await cx.connect()
         
         var tx = try! await cx.startTx()
@@ -70,7 +74,7 @@ extension db {
         q.select(col1, col2)
         q.from(tbl)
         q.filter(col1 == "foo")
-        let cx = Cx(database: "swisql", user: "swisql", password: "swisql")
+        let cx = getCx()
         try! await cx.connect()
         let tx = try! await cx.startTx()
         try! await scm.sync(tx)
@@ -117,7 +121,7 @@ extension db {
         
         assert(rec.count == 6)
         
-        let cx = Cx(database: "swisql", user: "swisql", password: "swisql")
+        let cx = getCx()
         try! await cx.connect()
         var tx = try! await cx.startTx()
         try! await scm.sync(tx)

@@ -32,9 +32,7 @@ extension db {
             table.foreignKeys.append(self)
         }
 
-        public var constraintType: String {
-            "FOREIGN KEY"
-        }
+        public let constraintType = "FOREIGN KEY"
 
         public var createSql: String {
             "\(db.createSql(self)) REFERENCES \(foreignTable.nameSql) (\(foreignColumns.sql)) " +

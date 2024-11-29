@@ -14,7 +14,7 @@ extension dom {
 
         public func html(_ value: Any) -> String { "\(name)=\"\(valueHtml(value))\"" }
 
-        public var name: String
+        public let name: String
 
         public func valueHtml(_ value: Any) -> String { "\(value)" }
     }
