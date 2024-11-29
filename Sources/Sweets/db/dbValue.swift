@@ -8,7 +8,7 @@ extension db {
 }
 
 public func ==(_ left: db.Value, _ right: Any) -> db.Condition {
-    db.BasicCondition("\(left.valueSql) = \(left.paramSql)", [left.encode(right)])
+    db.CustomCondition("\(left.valueSql) = \(left.paramSql)", [left.encode(right)])
 }
 
 public extension db.Value {

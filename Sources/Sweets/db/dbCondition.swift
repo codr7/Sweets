@@ -4,7 +4,7 @@ extension db {
         var conditionParams: [any Encodable] {get}
     }
 
-    public struct BasicCondition: Condition {
+    public struct CustomCondition: Condition {
         public let conditionSql: String
         public let conditionParams: [any Encodable]
 
@@ -24,11 +24,11 @@ extension db {
 }
 
 public func &&(_ left: db.Condition, _ right: db.Condition) -> db.Condition {
-    db.BasicCondition("(\(left.conditionSql)) AND (\(right.conditionSql))",
-                      left.conditionParams + right.conditionParams)
+    db.CustomCondition("(\(left.conditionSql)) AND (\(right.conditionSql))",
+                       left.conditionParams + right.conditionParams)
 }
 
 public func ||(_ left: db.Condition, _ right: db.Condition) -> db.Condition {
-    db.BasicCondition("(\(left.conditionSql)) OR (\(right.conditionSql))",
-                      left.conditionParams + right.conditionParams)
+    db.CustomCondition("(\(left.conditionSql)) OR (\(right.conditionSql))",
+                       left.conditionParams + right.conditionParams)
 }
