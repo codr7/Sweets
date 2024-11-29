@@ -11,7 +11,7 @@ extension db {
         let onDelete: Action
         
         public init(_ name: String, _ table: Table, _ foreignColumns: [IColumn],
-                    nullable: Bool = false, primaryKey: Bool = false,
+                    isNullable: Bool = false, isPrimaryKey: Bool = false,
                     onUpdate: Action = .cascade, onDelete: Action = .restrict) {
             self.onUpdate = onUpdate
             self.onDelete = onDelete
@@ -24,7 +24,9 @@ extension db {
                     fatalError("Table mismatch: \(table)/\(fc.table)")
                 }
 
-                columns.append(fc.clone("\(name)\(fc.name)", table, nullable: nullable, primaryKey: primaryKey))
+                columns.append(fc.clone("\(name)\(fc.name)", table,
+                                        isNullable: isNullable,
+                                        isPrimaryKey: isPrimaryKey))
             }
 
             super.init(name, columns)

@@ -4,7 +4,7 @@ extension db {
         var _columns: [IColumn] = []
         public var columns: [IColumn] { _columns }
         var foreignKeys: [ForeignKey] = []
-        lazy var primaryKey: Key = Key("\(name)PrimaryKey", _columns.filter {$0.primaryKey})
+        lazy var primaryKey: Key = Key("\(name)PrimaryKey", _columns.filter {$0.isPrimaryKey})
         public var sourceSql: String { nameSql }
 
         public override init(_ schema: Schema, _ name: String) {

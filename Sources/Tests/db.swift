@@ -21,10 +21,10 @@ extension db {
     static func foreignKeyTests() async throws {
         let scm = Schema()
         let tbl1 = Table(scm, "tbl1")
-        let col1 = IntColumn("col", tbl1, primaryKey: true)
+        let col1 = IntColumn("col", tbl1, isPrimaryKey: true)
         
         let tbl2 = Table(scm, "tbl2")
-        _ = ForeignKey("fkey", tbl2, [col1], primaryKey: true)
+        _ = ForeignKey("fkey", tbl2, [col1], isPrimaryKey: true)
         
         let cx = try await getCx()
         var tx = try await cx.startTx()
@@ -50,7 +50,7 @@ extension db {
     static func modelTests() async throws {
         let scm = Schema()
         let tbl1 = Table(scm, "tbl1")
-        let col1 = IntColumn("col", tbl1, primaryKey: true)
+        let col1 = IntColumn("col", tbl1, isPrimaryKey: true)
 
         let cx = try await getCx()
         let tx = try await cx.startTx()
@@ -95,7 +95,7 @@ extension db {
     static func queryTests() async throws {
         let scm = Schema()
         let tbl = Table(scm, "tbl")
-        let col1 = StringColumn("col1", tbl, primaryKey: true)
+        let col1 = StringColumn("col1", tbl, isPrimaryKey: true)
         let col2 = StringColumn("col2", tbl)
         
         let q = Query()
@@ -123,7 +123,7 @@ extension db {
         let dateCol = DateColumn("date", tbl)
         let decimalCol = DecimalColumn("decimal", tbl)
         let enumCol = EnumColumn<TestEnum>("enum", tbl)
-        let intCol = IntColumn("int", tbl, primaryKey: true)
+        let intCol = IntColumn("int", tbl, isPrimaryKey: true)
         let stringCol = StringColumn("string", tbl)
         let rec = Record()
         

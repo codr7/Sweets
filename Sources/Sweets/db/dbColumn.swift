@@ -7,22 +7,23 @@ extension db {
     public protocol IColumn: Value, TableDefinition {
         var columnType: String {get}
         var id: ObjectIdentifier {get}
-        var nullable: Bool {get}
-        var primaryKey: Bool {get}
+        var isNullable: Bool {get}
+        var isPrimaryKey: Bool {get}
         
         func clone(_ name: String, _ table: Table,
-                   nullable: Bool, primaryKey: Bool) -> IColumn
+                   isNullable: Bool, isPrimaryKey: Bool) -> IColumn
+        
         func equalValues(_ left: Any, _ right: Any) -> Bool
     }
 
     public class BasicColumn<T: Equatable>: BasicTableDefinition {
-        public let nullable: Bool
-        public let primaryKey: Bool
+        public let isNullable: Bool
+        public let isPrimaryKey: Bool
         
         public init(_ name: String, _ table: Table,
-                    nullable: Bool = false, primaryKey: Bool = false) {
-            self.nullable = nullable
-            self.primaryKey = primaryKey
+                    isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            self.isNullable = isNullable
+            self.isPrimaryKey = isPrimaryKey
             super.init(name, table)
         }
         
@@ -59,8 +60,10 @@ extension db {
 
     public class BoolColumn: Column<Bool> {
         public override init(_ name: String, _ table: Table,
-                             nullable: Bool = false, primaryKey: Bool = false) {
-            super.init(name, table, nullable: nullable, primaryKey: primaryKey)
+                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
+            
             table.definitions.append(self)
             table._columns.append(self)
         }
@@ -68,15 +71,17 @@ extension db {
         public let columnType = "BOOLEAN"
 
         public func clone(_ name: String, _ table: Table,
-                          nullable: Bool, primaryKey: Bool) -> IColumn {
-            BoolColumn(name, table, nullable: nullable, primaryKey: primaryKey)
+                          isNullable: Bool, isPrimaryKey: Bool) -> IColumn {
+            BoolColumn(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
         }
     }
 
     public class DateColumn: Column<Date> {
         public override init(_ name: String, _ table: Table,
-                             nullable: Bool = false, primaryKey: Bool = false) {
-            super.init(name, table, nullable: nullable, primaryKey: primaryKey)
+                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             table.definitions.append(self)
             table._columns.append(self)
         }
@@ -84,8 +89,9 @@ extension db {
         public let columnType = "TIMESTAMPTZ"
 
         public func clone(_ name: String, _ table: Table,
-                          nullable: Bool, primaryKey: Bool) -> IColumn {
-            DateColumn(name, table, nullable: nullable, primaryKey: primaryKey)
+                          isNullable: Bool, isPrimaryKey: Bool) -> IColumn {
+            DateColumn(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
         }
     }
 
@@ -93,11 +99,14 @@ extension db {
         let precision: Int
         
         public init(_ name: String, _ table: Table,
-                    nullable: Bool = false,
-                    primaryKey: Bool = false,
+                    isNullable: Bool = false,
+                    isPrimaryKey: Bool = false,
                     precision: Int = 38) {
             self.precision = precision
-            super.init(name, table, nullable: nullable, primaryKey: primaryKey)
+            
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
+            
             table.definitions.append(self)
             table._columns.append(self)
         }
@@ -105,10 +114,10 @@ extension db {
         public var columnType: String { "DECIMAL(\(precision))" }
 
         public func clone(_ name: String, _ table: Table,
-                          nullable: Bool, primaryKey: Bool) -> IColumn {
+                          isNullable: Bool, isPrimaryKey: Bool) -> IColumn {
             DecimalColumn(name, table,
-                          nullable: nullable,
-                          primaryKey: primaryKey,
+                          isNullable: isNullable,
+                          isPrimaryKey: isPrimaryKey,
                           precision: precision)
         }
     }
@@ -117,9 +126,12 @@ extension db {
         public let type: EnumType<T>
 
         public override init(_ name: String, _ table: Table,
-                             nullable: Bool = false, primaryKey: Bool = false) {
+                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
             type = EnumType<T>(table.schema)
-            super.init(name, table, nullable: nullable, primaryKey: primaryKey)
+
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
+            
             table.definitions.append(self)
             table._columns.append(self)
         }
@@ -128,8 +140,10 @@ extension db {
 
         public override var paramSql: String { "?::\(type.nameSql)" }
         
-        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> IColumn {
-            EnumColumn<T>(name, table, nullable: nullable, primaryKey: primaryKey)
+        public func clone(_ name: String, _ table: Table,
+                          isNullable: Bool, isPrimaryKey: Bool ) -> IColumn {
+            EnumColumn<T>(name, table,
+                          isNullable: isNullable, isPrimaryKey: isPrimaryKey)
         }
 
         public func create(_ cx: Cx) async throws {
@@ -151,30 +165,39 @@ extension db {
     }
 
     public class IntColumn: Column<Int> {
-        public override init(_ name: String, _ table: Table, nullable: Bool = false, primaryKey: Bool = false) {
-            super.init(name, table, nullable: nullable, primaryKey: primaryKey)
+        public override init(_ name: String, _ table: Table,
+                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             table.definitions.append(self)
             table._columns.append(self)
         }
 
         public let columnType = "INTEGER"
 
-        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool) -> IColumn {
-            IntColumn(name, table, nullable: nullable, primaryKey: primaryKey)
+        public func clone(_ name: String, _ table: Table,
+                          isNullable: Bool, isPrimaryKey: Bool) -> IColumn {
+            IntColumn(name, table,
+                      isNullable: isNullable, isPrimaryKey: isPrimaryKey)
         }
     }
 
     public class StringColumn: Column<String> {
-        public override init(_ name: String, _ table: Table, nullable: Bool = false, primaryKey: Bool = false) {
-            super.init(name, table, nullable: nullable, primaryKey: primaryKey)
+        public override init(_ name: String, _ table: Table,
+                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
+            
             table.definitions.append(self)
             table._columns.append(self)
         }
 
         public let columnType = "TEXT"
 
-        public func clone(_ name: String, _ table: Table, nullable: Bool, primaryKey: Bool ) -> IColumn {
-            StringColumn(name, table, nullable: nullable, primaryKey: primaryKey)
+        public func clone(_ name: String, _ table: Table,
+                          isNullable: Bool, isPrimaryKey: Bool ) -> IColumn {
+            StringColumn(name, table,
+                         isNullable: isNullable, isPrimaryKey: isPrimaryKey)
         }
     }
 
@@ -183,7 +206,7 @@ extension db {
 public extension db.IColumn {
     var createSql: String {
         var sql = "\(db.createSql(self as db.TableDefinition)) \(columnType)"
-        if primaryKey || !nullable { sql += " NOT NULL" }
+        if isPrimaryKey || !isNullable { sql += " NOT NULL" }
         return sql
     }
 
