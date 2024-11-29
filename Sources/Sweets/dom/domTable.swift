@@ -1,22 +1,18 @@
 extension dom {
-    public class Table: BasicNode {
-        public class Row: BasicNode {
-            public init() { super.init("tr") }
-
+    public class Table: Node {
+        public class Row: Node {
+            public let tag = "tr"
             public func td() -> Data { append(Data()) }
         }
 
-        public class Data: BasicNode {
+        public class Data: Node {
             nonisolated(unsafe) public static let Colspan =
               BasicAttribute<Int>("colspan")
             
-            public init() { super.init("td") }
+            public let tag = "td"
         }
         
-        public init() {
-            super.init("table")
-        }
-
+        public let tag = "table"
         public func tr() -> Row { append(Row()) }
     }
 }

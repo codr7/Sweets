@@ -1,6 +1,8 @@
 * döp om primaryKey till isPrimaryKey
 ** Column
 
+* leave out basicnode.tag
+
 * döp om nullable till isNullable
 
 * dom
