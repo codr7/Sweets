@@ -49,7 +49,7 @@ extension db {
 
             for c in primaryKey.columns {
                 let v = tx[rec, c] ?? rec[c]
-                if v == nil { throw DatabaseError.missingKey("\(c)") }
+                if v == nil { throw BasicError("Missing key: \(c)") }
                 wcs.append(c == v!)
             }
             

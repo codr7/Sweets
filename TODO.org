@@ -3,17 +3,17 @@
 ** add select from gappkit
 ** add button with onclick
 
-* add nio http server
+* http
+** add nio http server
 
-* add nested transaction support
-** hostr
-* add indexes
-* add sequences
-* finish Query
-** add result functionality
-*** fetch(inout record)
-* add models
-** hostr
+* db
+** add models
+*** hostr
+** add indexes
+** add sequences
+** finish Query
+*** add result functionality
+**** fetch(inout record)
 
 enum RepeatMode {
   case times(Int)
