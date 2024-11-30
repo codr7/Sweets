@@ -1,3 +1,14 @@
+* demo
+** add build target
+** add schema
+*** employees
+*** roles
+*** skills
+*** resources
+*** calendar
+** add run func
+*** init db
+
 * dom
 ** add input
 ** add select from gappkit
