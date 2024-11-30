@@ -1,11 +1,11 @@
 extension dom {
-    public class Table: Node {
-        public class Row: Node {
+    public class Table: Tag {
+        public class Row: Tag {
             public let tag = "tr"
             public func td() -> Data { append(Data()) }
         }
 
-        public class Data: Node {
+        public class Data: Tag {
             nonisolated(unsafe) public static let Colspan =
               BasicAttribute<Int>("colspan")
             
