@@ -24,9 +24,7 @@ extension db {
             self.name = name
         }
 
-        public var nameSql: String {
-            "\"\(name)\""
-        }
+        public var nameSql: String { "\"\(name)\"" }
     }
 
     public static func createSql(_ d: IDefinition) -> String {
@@ -39,17 +37,10 @@ extension db {
 }
 
 public extension db.IDefinition {
-    func create(_ cx: db.Cx) async throws {
-        try await cx.exec(self.createSql)
-    }
-
-    func drop(_ cx: db.Cx) async throws {
-        try await cx.exec(self.dropSql)
-    }
+    func create(_ cx: db.Cx) async throws { try await cx.exec(self.createSql) }
+    func drop(_ cx: db.Cx) async throws { try await cx.exec(self.dropSql) }
 
     func sync(_ cx: db.Cx) async throws {
-        if !(try await exists(cx)) {
-            try await create(cx)
-        }
+        if !(try await exists(cx)) { try await create(cx) }
     }
 }
