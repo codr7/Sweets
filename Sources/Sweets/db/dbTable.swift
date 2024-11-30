@@ -7,9 +7,8 @@ extension db {
         lazy var primaryKey: Key = Key("\(name)PrimaryKey", _columns.filter {$0.isPrimaryKey})
         public var sourceSql: String { nameSql }
 
-        public override init(_ schema: Schema, _ name: String) {
-            super.init(schema, name)
-            schema.definitions.append(self)
+        public override init(_ name: String) {
+            super.init(name)
         }
         
         public var createSql: String { "\(db.createSql(self)) ()" }

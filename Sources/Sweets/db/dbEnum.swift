@@ -6,8 +6,8 @@ extension db {
     }
 
     public class EnumType<T: Enum>: Definition {
-        public init(_ schema: Schema) {
-            super.init(schema, String(describing: T.self))
+        public init() {
+            super.init(String(describing: T.self))
         }
         
         public var createSql: String {
@@ -51,7 +51,7 @@ extension db {
         
         public init(_ type: EnumType<T>, _ name: String) {
             self.type = type
-            super.init(type.schema, name)
+            super.init(name)
         }
 
         public var definitionType = "VALUE"

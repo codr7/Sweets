@@ -17,6 +17,10 @@ let package = Package(
       targets: ["Sweets"]),
 
     .executable(
+      name: "Demo",
+      targets: ["Demo"]),
+
+    .executable(
       name: "Tests",
       targets: ["Tests"])
   ],
@@ -36,6 +40,10 @@ let package = Package(
         .product(name: "SystemPackage", package: "swift-system"),
       ]),
     
+    .executableTarget(
+      name: "Demo",
+      dependencies: ["Sweets"]),
+
     .executableTarget(
       name: "Tests",
       dependencies: ["Sweets"]),

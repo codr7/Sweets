@@ -34,6 +34,14 @@ extension db {
             table.foreignKeys.append(self)
         }
 
+        public convenience init(_ name: String, _ table: Table, _ foreignTable: Table,
+                    isNullable: Bool = false, isPrimaryKey: Bool = false,
+                    onUpdate: Action = .cascade, onDelete: Action = .restrict) {
+            self.init(name, table, foreignTable.primaryKey.columns,
+                      isNullable: isNullable, isPrimaryKey: isPrimaryKey,
+                      onUpdate: onUpdate, onDelete: onDelete)
+        }
+        
         public let constraintType = "FOREIGN KEY"
 
         public var createSql: String {

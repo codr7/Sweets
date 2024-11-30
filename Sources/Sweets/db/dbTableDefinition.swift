@@ -10,7 +10,7 @@ extension db {
 
         public init(_ name: String, _ table: Table) {
             self.table = table
-            super.init(table.schema, name)
+            super.init(name)
         }
     }
 

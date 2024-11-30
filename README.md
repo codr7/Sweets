@@ -1,10 +1,11 @@
 # Sweets
 
 ## setup
-`swift build` in the project root builds static and dynamic libraries.
+
+`swift build Sweets` in the project root builds static and dynamic libraries.
 
 ### tests
-Before running tests, a PostgreSQL user and database have to be created.
+The tests require a PostgreSQL user and database.
 
 ```
 sudo -u postgres psql
@@ -16,4 +17,4 @@ CREATE DATABASE sweets;
 GRANT ALL PRIVILEGES ON DATABASE sweets TO sweets;
 ```
 
-`swift run` in the project root runs all tests.
+`swift run Tests` in the project root runs all tests.

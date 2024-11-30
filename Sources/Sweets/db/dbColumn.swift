@@ -127,7 +127,7 @@ extension db {
 
         public override init(_ name: String, _ table: Table,
                              isNullable: Bool = false, isPrimaryKey: Bool = false) {
-            type = EnumType<T>(table.schema)
+            type = EnumType<T>()
 
             super.init(name, table,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)

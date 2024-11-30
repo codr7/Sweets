@@ -10,8 +10,7 @@ extension db {
     }
     
     static func conditionTests() {
-        let scm = Schema()
-        let tbl = Table(scm, "tbl")
+        let tbl = Table("tbl")
         let col = StringColumn("col", tbl)
         
         let c = (col == "foo") || (col == 42)
@@ -20,12 +19,13 @@ extension db {
     
     static func foreignKeyTests() async throws {
         let scm = Schema()
-        let tbl1 = Table(scm, "tbl1")
+        let tbl1 = Table("tbl1")
         let col1 = IntColumn("col", tbl1, isPrimaryKey: true)
         
-        let tbl2 = Table(scm, "tbl2")
+        let tbl2 = Table("tbl2")
         _ = ForeignKey("fkey", tbl2, [col1], isPrimaryKey: true)
-        
+
+        scm.register(tbl1, tbl2)
         let cx = try await getCx()
         var tx = try await cx.startTx()
         try await scm.create(cx)
@@ -49,11 +49,13 @@ extension db {
 
     static func modelTests() async throws {
         let scm = Schema()
-        let tbl1 = Table(scm, "tbl1")
+        let tbl1 = Table("tbl1")
         let col1 = IntColumn("col", tbl1, isPrimaryKey: true)
-
+        
+        scm.register(tbl1, tbl2)
         let cx = try await getCx()
         let tx = try await cx.startTx()
+        
         try await scm.sync(cx)
         let m = TestModel(cx, [tbl1])
         assert(!m.isModified)
@@ -94,10 +96,11 @@ extension db {
     
     static func queryTests() async throws {
         let scm = Schema()
-        let tbl = Table(scm, "tbl")
+        let tbl = Table("tbl")
         let col1 = StringColumn("col1", tbl, isPrimaryKey: true)
         let col2 = StringColumn("col2", tbl)
         
+        scm.register(tbl1)
         let q = Query()
         q.select(col1, col2)
         q.from(tbl)
@@ -118,13 +121,15 @@ extension db {
     
     static func recordTests() async throws {
         let scm = Schema()
-        let tbl = Table(scm, "tbl")
+        let tbl = Table("tbl")
         let boolCol = BoolColumn("bool", tbl)
         let dateCol = DateColumn("date", tbl)
         let decimalCol = DecimalColumn("decimal", tbl)
         let enumCol = EnumColumn<TestEnum>("enum", tbl)
         let intCol = IntColumn("int", tbl, isPrimaryKey: true)
         let stringCol = StringColumn("string", tbl)
+        scm.register(tbl1)
+
         let rec = Record()
         
         rec[boolCol] = true

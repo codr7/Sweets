@@ -6,7 +6,6 @@ extension db {
         var definitionType: String {get}
         var dropSql: String {get}
         var name: String {get}
-        var schema: Schema {get}
         var nameSql: String {get}
         
         func create(_ cx: Cx) async throws
@@ -17,10 +16,8 @@ extension db {
 
     public class BasicDefinition {
         public let name: String
-        public let schema: Schema
         
-        public init(_ schema: Schema, _ name: String) {
-            self.schema = schema
+        public init(_ name: String) {
             self.name = name
         }
 
