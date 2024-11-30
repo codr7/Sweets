@@ -1,8 +1,10 @@
 extension db {
-    public protocol TableDefinition: Definition {
+    public protocol ITableDefinition: IDefinition {
         var table: Table {get}
     }
 
+    public typealias TableDefinition = BasicTableDefinition & ITableDefinition
+    
     public class BasicTableDefinition: BasicDefinition {
         public let table: Table
 
@@ -12,11 +14,11 @@ extension db {
         }
     }
 
-    public static func createSql(_ d: TableDefinition) -> String {
+    public static func createSql(_ d: ITableDefinition) -> String {
         "ALTER TABLE \(d.table.nameSql) ADD \(d.definitionType) \(d.nameSql)"
     }
 
-    public static func dropSql(_ d: TableDefinition) -> String {
+    public static func dropSql(_ d: ITableDefinition) -> String {
         "ALTER TABLE \(d.table.nameSql) DROP \(d.definitionType) \(d.nameSql)"
     }
 }

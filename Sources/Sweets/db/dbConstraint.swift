@@ -1,5 +1,7 @@
 extension db {
-    public protocol Constraint: TableDefinition {
+    public typealias Constraint = BasicConstraint & IConstraint
+    
+    public protocol IConstraint: ITableDefinition {
         var columns: [IColumn] {get}
         var constraintType: String {get}
     }
@@ -38,7 +40,7 @@ extension db {
         }
     }
 
-    public static func createSql(_ c: Constraint) -> String {
-        "\(createSql(c as TableDefinition)) \(c.constraintType) (\(c.columns.sql))"
+    public static func createSql(_ c: IConstraint) -> String {
+        "\(createSql(c as ITableDefinition)) \(c.constraintType) (\(c.columns.sql))"
     }
 }

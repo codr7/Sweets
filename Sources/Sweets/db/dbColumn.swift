@@ -4,7 +4,7 @@ import PostgresNIO
 extension db {
     public typealias Column<T> = BasicColumn<T> & IColumn where T: Equatable
     
-    public protocol IColumn: Value, TableDefinition {
+    public protocol IColumn: Value, ITableDefinition {
         var columnType: String {get}
         var id: ObjectIdentifier {get}
         var isNullable: Bool {get}
@@ -205,7 +205,7 @@ extension db {
 
 public extension db.IColumn {
     var createSql: String {
-        var sql = "\(db.createSql(self as db.TableDefinition)) \(columnType)"
+        var sql = "\(db.createSql(self as db.ITableDefinition)) \(columnType)"
         if isPrimaryKey || !isNullable { sql += " NOT NULL" }
         return sql
     }

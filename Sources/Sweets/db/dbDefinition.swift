@@ -1,5 +1,7 @@
 extension db {
-    public protocol Definition {
+    public typealias Definition = BasicDefinition & IDefinition
+    
+    public protocol IDefinition {
         var createSql: String {get}
         var definitionType: String {get}
         var dropSql: String {get}
@@ -27,16 +29,16 @@ extension db {
         }
     }
 
-    public static func createSql(_ d: Definition) -> String {
+    public static func createSql(_ d: IDefinition) -> String {
         "CREATE \(d.definitionType) \(d.nameSql)"
     }
 
-    public static func dropSql(_ d: Definition) -> String {
+    public static func dropSql(_ d: IDefinition) -> String {
         "DROP \(d.definitionType) \(d.nameSql)"
     }
 }
 
-public extension db.Definition {
+public extension db.IDefinition {
     func create(_ cx: db.Cx) async throws {
         try await cx.exec(self.createSql)
     }

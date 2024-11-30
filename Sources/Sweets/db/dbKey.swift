@@ -1,5 +1,5 @@
 extension db {
-    public class Key: BasicConstraint, Constraint {
+    public class Key: Constraint {
         public override init(_ name: String, _ columns: [IColumn]) {
             super.init(name, columns)
             self.table.definitions.append(self)

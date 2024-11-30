@@ -5,7 +5,7 @@ extension db {
       where RawValue == String {
     }
 
-    public class EnumType<T: Enum>: BasicDefinition, Definition {
+    public class EnumType<T: Enum>: Definition {
         public init(_ schema: Schema) {
             super.init(schema, String(describing: T.self))
         }
@@ -46,7 +46,7 @@ extension db {
         }
     }
 
-    public class EnumMember<T: Enum>: BasicDefinition, Definition {
+    public class EnumMember<T: Enum>: Definition {
         let type: EnumType<T>
         
         public init(_ type: EnumType<T>, _ name: String) {
@@ -67,15 +67,16 @@ extension db {
         }
 
         public func exists(_ cx: Cx) async throws -> Bool {
-            try await cx.queryValue("""
-                                      SELECT EXISTS (
-                                      SELECT
-                                      FROM pg_type t 
-                                      JOIN pg_enum e on e.enumtypid = t.oid  
-                                      JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-                                      WHERE t.typname = \(type.name) AND e.enumlabel = \(name)
-                                      )
-                                      """)
+            try await cx.queryValue(
+              """
+                SELECT EXISTS (
+                SELECT
+                FROM pg_type t 
+                JOIN pg_enum e on e.enumtypid = t.oid  
+                JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+                WHERE t.typname = \(type.name) AND e.enumlabel = \(name)
+                )
+                """)
         }
     }
 }

@@ -1,5 +1,5 @@
 extension db {
-    public class ForeignKey: BasicConstraint, Constraint {
+    public class ForeignKey: Constraint {
         public enum Action: String {
             case cascade = "CASCADE"
             case restrict = "RESTRICT"

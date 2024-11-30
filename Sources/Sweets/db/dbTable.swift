@@ -1,5 +1,5 @@
 extension db {
-    public class Table: BasicDefinition, Definition, Source {
+    public class Table: Definition, Source {
         var definitions: [any TableDefinition] = []
         var _columns: [IColumn] = []
         public var columns: [IColumn] { _columns }
