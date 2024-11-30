@@ -17,9 +17,7 @@ extension db {
 
         public init() {}
 
-        public var count: Int {
-            _fields.count
-        }
+        public var count: Int { _fields.count }
 
         public subscript<T>(column: Column<T>) -> T? {
             get {

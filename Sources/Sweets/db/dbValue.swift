@@ -12,22 +12,12 @@ public func ==(_ left: db.Value, _ right: Any) -> db.Condition {
 }
 
 public extension db.Value {
-    var paramSql: String {
-        "?"
-    }
-    
-    var valueParams: [any db.Encodable] {
-        []
-    }
-    
-    func encode(_ val: Any) -> any db.Encodable {
-        val as! any db.Encodable
-    }
+    var paramSql: String { "?" }
+    var valueParams: [any db.Encodable] { [] }
+    func encode(_ val: Any) -> any db.Encodable { val as! any db.Encodable }
 }
 
 public extension [any db.Value] {
-    var sql: String {
-        self.map({$0.valueSql}).joined(separator: ", ")
-    }
+    var sql: String { self.map({$0.valueSql}).joined(separator: ", ") }
 }
 

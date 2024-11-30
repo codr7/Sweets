@@ -6,13 +6,9 @@ public extension db {
 }
 
 public extension db.Source {
-    var sourceParams: [any db.Encodable] {
-        []
-    }
+    var sourceParams: [any db.Encodable] { [] }
 }
 
 public extension [any db.Source] {
-    var sql: String {
-        self.map({$0.sourceSql}).joined(separator: ", ")
-    }
+    var sql: String { self.map({$0.sourceSql}).joined(separator: ", ") }
 }

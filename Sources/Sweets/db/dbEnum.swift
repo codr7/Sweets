@@ -54,9 +54,7 @@ extension db {
             super.init(type.schema, name)
         }
 
-        public var definitionType: String {
-            "VALUE"
-        }
+        public var definitionType = "VALUE"
         
         public var createSql: String {
             "ALTER TYPE \(type.nameSql) ADD VALUE '\(name)'"

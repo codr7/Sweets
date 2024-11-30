@@ -1,5 +1,3 @@
-* db cleaning
-
 * dom
 ** add input
 ** add select from gappkit
