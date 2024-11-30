@@ -1,6 +1,3 @@
-* add ColumnClone imp
-** replaces clone funcs
-
 * dom
 ** add input
 ** add select from gappkit
