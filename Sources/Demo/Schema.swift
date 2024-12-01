@@ -70,6 +70,15 @@ extension demo {
             taskNotes = db.StringColumn("notes", tasks)
             taskMilestone = db.ForeignKey("milestone", tasks, milestones)
 
+            tasks.beforeInsert.append(
+              {(rec, _cx) in
+                  let cx = _cx as! Cx
+
+                  if rec[cx.schema.taskId] == nil {
+                      rec[cx.schema.taskId] = try await cx.schema.taskIds.next(cx.db)
+                  }
+              })
+            
             super.init()
 
             register(

@@ -3,13 +3,13 @@ extension db {
 
     public protocol IModel {
         var db: Cx {get}
-        var record: Record {get}
+        var record: Record {get set}
         var tables: [Table] {get}
     }
     
     open class BasicModel {
         public let db: Cx
-        public let record: Record
+        public var record: Record
         
         public init(_ db: Cx, _ record: Record? = nil) {
             self.db = db
@@ -36,8 +36,8 @@ public extension db.IModel {
     }
 
     @discardableResult
-    func store() async throws -> db.IModel {
-        for t in tables { try await t.store(record, db) }
+    mutating func store() async throws -> db.IModel {
+        for t in tables { try await t.store(&record, db) }
         return self
     }
 }

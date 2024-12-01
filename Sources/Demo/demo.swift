@@ -14,7 +14,7 @@ public extension demo {
         let tx = try await cx.db.startTx()
         try await cx.schema.sync(cx.db)
 
-        let e = Employee(cx)
+        var e = Employee(cx)
         e.name1 = "Andreas"
         e.name2 = "Nilsson"
         e.email = "codr7@protonmail.com"

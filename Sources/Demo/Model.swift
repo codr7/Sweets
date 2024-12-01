@@ -21,3 +21,11 @@ extension demo {
         }
     }
 }
+
+extension demo.IModel {
+    @discardableResult
+    mutating func store() async throws -> db.IModel {
+        for t in tables { try await t.store(&record, db, cx) }
+        return self
+    }
+}

@@ -1,6 +1,4 @@
-* add table events
-** hostr
-** set task id on insert if nil
+* fix record/model column default values
 
 * demo
 ** schema
