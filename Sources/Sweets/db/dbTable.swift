@@ -45,7 +45,10 @@ extension db {
                            _ cx: Cx,
                            _ data: Any? = nil) async throws {
             for h in beforeInsert { try await h(&rec, data) }
-            let cvs = _columns.map({($0, rec[$0])}).filter({$0.1 != nil})
+
+            let cvs = _columns
+              .map({($0, rec[$0] ?? $0.defaultValue)})
+              .filter({$0.1 != nil})
 
             let sql = """
               INSERT INTO \(nameSql) (\(cvs.map({$0.0}).sql))

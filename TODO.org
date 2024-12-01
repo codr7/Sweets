@@ -1,10 +1,5 @@
-* fix record/model column default values
-
 * demo
-** schema
-*** skills
-*** resources
-*** calendar
+** create role/project/milestone/task
 
 * dom
 ** add input

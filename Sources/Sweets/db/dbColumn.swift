@@ -6,6 +6,7 @@ extension db {
     
     public protocol IColumn: Value, ITableDefinition {
         var columnType: String {get}
+        var defaultValue: Any? {get}
         var id: ObjectIdentifier {get}
         var isNullable: Bool {get}
         var isPrimaryKey: Bool {get}
@@ -17,11 +18,14 @@ extension db {
     }
 
     public class BasicColumn<T: Equatable>: BasicTableDefinition {
+        public let defaultValue: Any?
         public let isNullable: Bool
         public let isPrimaryKey: Bool
         
         public init(_ name: String, _ table: Table,
+                    defaultValue: Any? = nil,
                     isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            self.defaultValue = defaultValue
             self.isNullable = isNullable
             self.isPrimaryKey = isPrimaryKey
             super.init(name, table)
@@ -29,9 +33,7 @@ extension db {
         
         public let definitionType = "COLUMN"
         
-        public var id: ObjectIdentifier {
-            ObjectIdentifier(self)
-        }
+        public var id: ObjectIdentifier { ObjectIdentifier(self) }
 
         public var paramSql: String { "?" }
 
@@ -59,9 +61,11 @@ extension db {
     }
 
     public class BoolColumn: Column<Bool> {
-        public override init(_ name: String, _ table: Table,
-                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+        public init(_ name: String, _ table: Table,
+                    defaultValue: Bool? = false,
+                    isNullable: Bool = false, isPrimaryKey: Bool = false) {
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             
             table.definitions.append(self)
@@ -78,9 +82,13 @@ extension db {
     }
 
     public class DateColumn: Column<Date> {
-        public override init(_ name: String, _ table: Table,
-                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+        public static let minValue = Date(timeIntervalSince1970: 0)
+        
+        public init(_ name: String, _ table: Table,
+                    defaultValue: Date? = minValue,
+                    isNullable: Bool = false, isPrimaryKey: Bool = false) {
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             table.definitions.append(self)
             table._columns.append(self)
@@ -99,12 +107,13 @@ extension db {
         let precision: Int
         
         public init(_ name: String, _ table: Table,
-                    isNullable: Bool = false,
-                    isPrimaryKey: Bool = false,
+                    defaultValue: Decimal? = Decimal(0),
+                    isNullable: Bool = false, isPrimaryKey: Bool = false,
                     precision: Int = 38) {
             self.precision = precision
             
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             
             table.definitions.append(self)
@@ -125,11 +134,13 @@ extension db {
     public class EnumColumn<T: Enum>: Column<T> where T.RawValue == String {
         public let type: EnumType<T>
 
-        public override init(_ name: String, _ table: Table,
+        public init(_ name: String, _ table: Table,
+                             defaultValue: T? = nil,
                              isNullable: Bool = false, isPrimaryKey: Bool = false) {
             type = EnumType<T>()
 
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             
             table.definitions.append(self)
@@ -165,9 +176,11 @@ extension db {
     }
     
     public class IdColumn: Column<Sequence.Value> {
-        public override init(_ name: String, _ table: Table,
+        public init(_ name: String, _ table: Table,
+                             defaultValue: Int? = nil,
                              isNullable: Bool = false, isPrimaryKey: Bool = false) {
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             
             table.definitions.append(self)
@@ -185,9 +198,11 @@ extension db {
 
     
     public class IntColumn: Column<Int> {
-        public override init(_ name: String, _ table: Table,
-                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+        public init(_ name: String, _ table: Table,
+                    defaultValue: Int? = 0,
+                    isNullable: Bool = false, isPrimaryKey: Bool = false) {
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             table.definitions.append(self)
             table._columns.append(self)
@@ -203,9 +218,11 @@ extension db {
     }
 
     public class StringColumn: Column<String> {
-        public override init(_ name: String, _ table: Table,
-                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+        public init(_ name: String, _ table: Table,
+                    defaultValue: String? =  "",
+                    isNullable: Bool = false, isPrimaryKey: Bool = false) {
             super.init(name, table,
+                       defaultValue: defaultValue,
                        isNullable: isNullable, isPrimaryKey: isPrimaryKey)
             
             table.definitions.append(self)
