@@ -3,9 +3,7 @@
 ** use for task id
 
 * demo
-** add Model
-*** hostr
-*** Employee
+** add Models
 
 * demo
 ** schema

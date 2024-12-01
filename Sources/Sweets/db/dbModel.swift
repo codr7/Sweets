@@ -2,17 +2,17 @@ extension db {
     public typealias Model = IModel & BasicModel
 
     public protocol IModel {
-        var cx: Cx {get}
+        var db: Cx {get}
         var record: Record {get}
         var tables: [Table] {get}
     }
     
     open class BasicModel {
-        public let cx: Cx
+        public let db: Cx
         public let record: Record
         
-        public init(_ cx: Cx, _ record: Record? = nil) {
-            self.cx = cx
+        public init(_ db: Cx, _ record: Record? = nil) {
+            self.db = db
             self.record = record ?? Record()
         }
     }
@@ -20,7 +20,7 @@ extension db {
 
 public extension db.IModel {
     var isModified: Bool {
-        let tx = (cx.peekTx() ?? cx)
+        let tx = (db.peekTx() ?? db)
         
         return tables.contains(
           where: {t in
@@ -37,7 +37,7 @@ public extension db.IModel {
 
     @discardableResult
     func store() async throws -> db.IModel {
-        for t in tables { try await t.store(record, cx) }
+        for t in tables { try await t.store(record, db) }
         return self
     }
 }
