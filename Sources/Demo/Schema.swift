@@ -11,6 +11,11 @@ extension demo {
         public let employeeRoles = db.Table("employeeRoles")
         public let employeeRoleEmployee: db.ForeignKey
         public let employeeRoleRole: db.ForeignKey
+
+        public let milestones = db.Table("milestones")
+        public let milestoneProject: db.ForeignKey
+        public let milestoneName: db.StringColumn
+        public let milestoneNotes: db.StringColumn
         
         public let projects = db.Table("projects")
         public let projectName: db.StringColumn
@@ -24,6 +29,10 @@ extension demo {
         public let roles = db.Table("roles")
         public let roleName: db.StringColumn
         public let roleNotes: db.StringColumn
+
+        public let tasks = db.Table("tasks")
+        public let taskId: db.IdColumn
+        public let taskProject: db.ForeignKey
 
         public override init() {
             employeeEmail = db.StringColumn("email", employees, isPrimaryKey: true)
@@ -48,9 +57,20 @@ extension demo {
                                                 isPrimaryKey: true)  
             projectMemberRole = db.ForeignKey("role", projectMembers, roles)
 
-            
+            milestoneProject = db.ForeignKey("project", milestones, projects,
+                                             isPrimaryKey: true)
+            milestoneName = db.StringColumn("name", milestones, isPrimaryKey: true)
+            milestoneNotes = db.StringColumn("notes", milestones)
+
+            taskId = db.IdColumn("id", tasks, isPrimaryKey: true)
+            taskProject = db.ForeignKey("project", tasks, projects)
+
             super.init()
-            register(employees, roles, employeeRoles, projects, projectMembers)
+
+            register(
+              employees, roles, employeeRoles, projects, projectMembers,
+              milestones, tasks
+            )
         }
     }
 }

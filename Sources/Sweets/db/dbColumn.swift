@@ -164,6 +164,26 @@ extension db {
         }
     }
 
+    public class IdColumn: Column<UInt64> {
+        public override init(_ name: String, _ table: Table,
+                             isNullable: Bool = false, isPrimaryKey: Bool = false) {
+            super.init(name, table,
+                       isNullable: isNullable, isPrimaryKey: isPrimaryKey)
+            
+            table.definitions.append(self)
+            table._columns.append(self)
+        }
+        
+        public let columnType = "BIGSERIAL"
+
+        public func clone(_ name: String, _ table: Table,
+                          isNullable: Bool, isPrimaryKey: Bool) -> IColumn {
+            IdColumn(name, table,
+                     isNullable: isNullable, isPrimaryKey: isPrimaryKey)
+        }
+    }
+
+    
     public class IntColumn: Column<Int> {
         public override init(_ name: String, _ table: Table,
                              isNullable: Bool = false, isPrimaryKey: Bool = false) {

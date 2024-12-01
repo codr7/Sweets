@@ -1,11 +1,13 @@
 * db
-** add indexes
 ** add sequences
+** use for task id
 
 * demo
 ** add Model
 *** hostr
 *** Employee
+
+* demo
 ** schema
 *** skills
 *** resources
@@ -21,7 +23,6 @@
 
 * db
 ** add indexes
-** add sequences
 ** finish Query
 *** add result functionality
 **** fetch(inout record)
