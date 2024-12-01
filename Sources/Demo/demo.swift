@@ -14,7 +14,11 @@ public extension demo {
         let tx = try await cx.db.startTx()
         try await cx.schema.sync(cx.db)
 
-        //TODO: run
+        let e = Employee(cx)
+        e.name1 = "Andreas"
+        e.name2 = "Nilsson"
+        e.email = "codr7@protonmail.com"
+        try await e.store()
        
         try await tx.rollback()
         try await cx.db.disconnect()

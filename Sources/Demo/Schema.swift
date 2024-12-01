@@ -2,6 +2,8 @@ import Sweets
 
 extension demo {
     public class Schema: db.Schema {
+        public static let sequenceStart = 100
+        
         public let employees = db.Table("employees")
         public let employeeEmail: db.StringColumn
         public let employeeName1: db.StringColumn 
@@ -30,9 +32,11 @@ extension demo {
         public let roleName: db.StringColumn
         public let roleNotes: db.StringColumn
 
+        public let taskIds = db.Sequence("taskIds", sequenceStart)
         public let tasks = db.Table("tasks")
         public let taskId: db.IdColumn
-        public let taskProject: db.ForeignKey
+        public let taskMilestone: db.ForeignKey
+        public let taskNotes: db.StringColumn
 
         public override init() {
             employeeEmail = db.StringColumn("email", employees, isPrimaryKey: true)
@@ -63,13 +67,14 @@ extension demo {
             milestoneNotes = db.StringColumn("notes", milestones)
 
             taskId = db.IdColumn("id", tasks, isPrimaryKey: true)
-            taskProject = db.ForeignKey("project", tasks, projects)
+            taskNotes = db.StringColumn("notes", tasks)
+            taskMilestone = db.ForeignKey("milestone", tasks, milestones)
 
             super.init()
 
             register(
               employees, roles, employeeRoles, projects, projectMembers,
-              milestones, tasks
+              milestones, taskIds, tasks
             )
         }
     }

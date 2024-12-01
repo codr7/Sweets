@@ -163,8 +163,8 @@ extension db {
             if !(try await exists(cx)) { try await create(cx) }
         }
     }
-
-    public class IdColumn: Column<UInt64> {
+    
+    public class IdColumn: Column<Sequence.Value> {
         public override init(_ name: String, _ table: Table,
                              isNullable: Bool = false, isPrimaryKey: Bool = false) {
             super.init(name, table,
@@ -241,3 +241,4 @@ extension [any db.IColumn] {
 }
 
 extension Decimal: @retroactive PostgresDynamicTypeEncodable {}
+extension UInt64: @retroactive PostgresDecodable {}

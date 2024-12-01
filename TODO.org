@@ -1,9 +1,6 @@
-* db
-** add sequences
-** use for task id
-
-* demo
-** add Models
+* add table events
+** hostr
+** set task id on insert if nil
 
 * demo
 ** schema
