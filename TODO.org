@@ -7,8 +7,6 @@
 *** hostr
 *** Employee
 ** schema
-*** projects
-**** projectMembers employee/role
 *** skills
 *** resources
 *** calendar
