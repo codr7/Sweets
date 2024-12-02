@@ -25,6 +25,12 @@ public extension demo {
         try await r.store()
 
         try await e.add(role: r)
+
+        var p = Project(cx)
+        p.name = "Opus Magnum"
+        try await p.store()
+
+        try await p.add(member: e, role: r)
         
         try await tx.rollback()
         try await cx.db.disconnect()

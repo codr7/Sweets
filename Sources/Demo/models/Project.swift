@@ -13,5 +13,23 @@ extension demo {
             get { record[cx.schema.projectNotes] }
             set(v) { record[cx.schema.projectNotes] = v }
         }
+
+        @discardableResult
+        public func add(member: Employee, role: Role) async throws -> Project {
+            var pm = ProjectMember(self, member, role)
+            try await pm.store()
+            return self
+        }
+    }
+
+    public class ProjectMember: Model {
+        public var tables: [db.Table] { [cx.schema.projectMembers] }
+        
+        public init(_ project: Project, _ member: Employee, _ role: Role) {
+            super.init(project.cx)
+            record[cx.schema.projectMemberProject] = project.record
+            record[cx.schema.projectMemberMember] = member.record
+            record[cx.schema.projectMemberRole] = role.record
+        }
     }
 }
