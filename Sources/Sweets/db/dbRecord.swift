@@ -1,7 +1,11 @@
 extension db {
     public typealias Field = (IColumn, Any)
 
-    public class Record {
+    public class Record: CustomStringConvertible {
+        public var description: String {
+            "{\(fields.map({(c, v) in "\(c.name):\(v)"}).joined(separator: " "))}"
+        }
+        
         public var fields: [Field] {_fields.items}
         
         var _fields = OrderedSet({(l: IColumn, r: Field) -> Order in
@@ -50,7 +54,7 @@ extension db {
                 let result = Record()
                 
                 for i in 0..<key.columns.count {
-                    if let v = _fields[key.columns[i]] {
+                    if let v = self[key.columns[i]] {
                         result[key.foreignColumns[i]] = v
                     }
                 }
@@ -59,7 +63,7 @@ extension db {
             }
             set(source) {
                 for i in 0..<key.columns.count {
-                    _fields[key.columns[i]] = source._fields[key.foreignColumns[i]]
+                    self[key.columns[i]] = source[key.foreignColumns[i]]
                 }
             }
         }

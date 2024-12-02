@@ -19,7 +19,13 @@ public extension demo {
         e.name2 = "Nilsson"
         e.email = "codr7@protonmail.com"
         try await e.store()
-       
+
+        var r = Role(cx)
+        r.name = "Tech Lead"
+        try await r.store()
+
+        try await e.add(role: r)
+        
         try await tx.rollback()
         try await cx.db.disconnect()
     }

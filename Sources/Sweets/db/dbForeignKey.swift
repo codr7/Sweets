@@ -1,4 +1,4 @@
-extension db {
+extension db {    
     public class ForeignKey: Constraint {
         public enum Action: String {
             case cascade = "CASCADE"
@@ -24,7 +24,7 @@ extension db {
                     fatalError("Table mismatch: \(table)/\(fc.table)")
                 }
 
-                columns.append(fc.clone("\(name)\(fc.name)", table,
+                columns.append(fc.clone("\(name)\(fc.name.capitalized)", table,
                                         isNullable: isNullable,
                                         isPrimaryKey: isPrimaryKey))
             }
@@ -35,8 +35,8 @@ extension db {
         }
 
         public convenience init(_ name: String, _ table: Table, _ foreignTable: Table,
-                    isNullable: Bool = false, isPrimaryKey: Bool = false,
-                    onUpdate: Action = .cascade, onDelete: Action = .restrict) {
+                                isNullable: Bool = false, isPrimaryKey: Bool = false,
+                                onUpdate: Action = .cascade, onDelete: Action = .restrict) {
             self.init(name, table, foreignTable.primaryKey.columns,
                       isNullable: isNullable, isPrimaryKey: isPrimaryKey,
                       onUpdate: onUpdate, onDelete: onDelete)
@@ -50,5 +50,13 @@ extension db {
         }
 
         public var dropSql: String { db.dropSql(self) }
+    }
+}
+
+extension String {
+    var capitalized: String {
+        let c1 = self.prefix(1).uppercased()
+        let cs = self.dropFirst().lowercased()
+        return c1 + cs
     }
 }
