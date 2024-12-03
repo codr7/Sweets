@@ -2,6 +2,15 @@ import Sweets
 
 extension demo {
     public class Task: Model {
+        public init(_ milestone: Milestone) {
+            super.init(milestone.cx)
+            record[cx.schema.taskMilestone] = milestone.record
+        }
+
+        public override init(_ cx: Cx, _ record: db.Record) {
+            super.init(cx, record)
+        }
+        
         public var tables: [db.Table] { [cx.schema.tasks] }
         
         public var id: db.Sequence.Value? {

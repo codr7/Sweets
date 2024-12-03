@@ -36,8 +36,8 @@ public extension demo {
         m.name = "Default"
         try await m.store()
         
-        //var t = Task(p)
-        //try
+        var t = Task(m)
+        try await t.store()
         
         try await tx.rollback()
         try await cx.db.disconnect()

@@ -4,9 +4,6 @@
 **** add result functionality
 **** fetch(inout record)
 
-* demo
-** create task
-
 * dom
 ** add input
 ** add select from gappkit
