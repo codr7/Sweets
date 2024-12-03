@@ -54,9 +54,5 @@ extension db {
 }
 
 extension String {
-    var capitalized: String {
-        let c1 = self.prefix(1).uppercased()
-        let cs = self.dropFirst().lowercased()
-        return c1 + cs
-    }
+    var capitalized: String { self.prefix(1).uppercased() + self.dropFirst() }
 }
