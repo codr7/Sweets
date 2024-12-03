@@ -36,9 +36,10 @@ extension db {
             try await cx.queryValue("""
                                       SELECT EXISTS (
                                       SELECT FROM pg_tables
-                                      WHERE tablename  = \(name)
+                                      WHERE tablename  = $1
                                       )
-                                      """)
+                                      """,
+                                    [name])
         }
 
         public func insert(_ rec: inout Record,

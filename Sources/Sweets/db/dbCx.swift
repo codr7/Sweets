@@ -66,18 +66,6 @@ extension db {
             try await connection!.query(PostgresQuery(unsafeSQL: psql, binds: bs), logger: log)
         }
 
-        public func query(_ query: PostgresQuery) async throws -> PostgresRowSequence {
-            print("\(query.sql)")
-            return try await connection!.query(query, logger: log)
-        }
-
-        public func queryValue<T: PostgresDecodable>(_ query: PostgresQuery) async throws -> T {
-            print("\(query.sql)")
-            let rows = try await connection!.query(query, logger: log)
-            for try await (value) in rows.decode((T).self) { return value }
-            throw BasicError("No rows")
-        }
-
         public func queryValue<T: PostgresDecodable>(_ sql: String, _ params: [any Encodable] = []) async throws -> T {
             print("\(sql)")
             let psql = convertParams(sql)
