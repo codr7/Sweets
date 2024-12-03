@@ -1,12 +1,11 @@
-* db
-** finish Query
-*** add result functionality
+* verify member role when adding project member
+** add table.exists
+*** finish Query
+**** add result functionality
 **** fetch(inout record)
 
-* verify member role when adding project member
-
 * demo
-** create milestone/task
+** create task
 
 * dom
 ** add input

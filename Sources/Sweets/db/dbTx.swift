@@ -52,17 +52,4 @@ extension db {
             isDone = true
         }
     }
-
-    public static func convertParams(_ sql: String) -> String {
-        let ss = sql.components(separatedBy: "?")
-        var result = ss[0]
-        var n = 1
-        
-        for s in ss[1...] {
-            result = result + "$\(n)" + s
-            n += 1
-        }
-
-        return result
-    }
 }

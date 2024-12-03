@@ -2,7 +2,7 @@ import PostgresNIO
 
 extension db {
     public class Sequence: Definition {
-        public typealias Value = UInt64
+        public typealias Value = Int
         public let start: Value
         
         public init(_ name: String, _ start: Int = 0) {
@@ -29,7 +29,8 @@ extension db {
         }
 
         public func next(_ cx: Cx) async throws -> Value {
-            try await cx.queryValue("SELECT NEXTVAL ('\(name)')")
+            print("name: \(name)")
+            return try await cx.queryValue("SELECT NEXTVAL('\"\(name)\"')", [])
         }
     }
 }

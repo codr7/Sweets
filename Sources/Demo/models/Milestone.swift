@@ -2,11 +2,19 @@ import Sweets
 
 extension demo {
     public class Milestone: Model {
-        public var tables: [db.Table] { [cx.schema.tasks] }
+        public init(_ project: Project) {
+            super.init(project.cx)
+            record[cx.schema.milestoneProject] = project.record
+        }
+
+        public override init(_ cx: Cx, _ record: db.Record) {
+            super.init(cx, record)
+        }
+        
+        public var tables: [db.Table] { [cx.schema.milestones] }
         
         public var project: Project {
             get { Project(cx, record[cx.schema.milestoneProject]) }
-            set(v) { record[cx.schema.milestoneProject] = v.record }
         }
 
         public var name: String? {

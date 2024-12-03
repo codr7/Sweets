@@ -52,7 +52,7 @@ extension db {
 
         public func exec(_ sql: String, _ params: [any Encodable] = []) async throws {
             let psql = convertParams(sql)
-            print("\(psql)\n")
+            print("\(psql)")
             var bs = PostgresBindings()
             for p in params { bs.append(p) }
             try await connection!.query(PostgresQuery(unsafeSQL: psql, binds: bs), logger: log)
@@ -60,20 +60,31 @@ extension db {
 
         public func query(_ sql: String, _ params: [any Encodable] = []) async throws {
             let psql = convertParams(sql)
-            print("\(psql)\n")
+            print("\(psql)")
             var bs = PostgresBindings()
             for p in params { bs.append(p) }
             try await connection!.query(PostgresQuery(unsafeSQL: psql, binds: bs), logger: log)
         }
 
         public func query(_ query: PostgresQuery) async throws -> PostgresRowSequence {
-            print("\(query.sql)\n")
+            print("\(query.sql)")
             return try await connection!.query(query, logger: log)
         }
 
         public func queryValue<T: PostgresDecodable>(_ query: PostgresQuery) async throws -> T {
-            print("\(query.sql)\n")
+            print("\(query.sql)")
             let rows = try await connection!.query(query, logger: log)
+            for try await (value) in rows.decode((T).self) { return value }
+            throw BasicError("No rows")
+        }
+
+        public func queryValue<T: PostgresDecodable>(_ sql: String, _ params: [any Encodable] = []) async throws -> T {
+            print("\(sql)")
+            let psql = convertParams(sql)
+            var bs = PostgresBindings()
+            for p in params { bs.append(p) }
+            
+            let rows = try await connection!.query(PostgresQuery(unsafeSQL: psql, binds: bs), logger: log)
             for try await (value) in rows.decode((T).self) { return value }
             throw BasicError("No rows")
         }
@@ -103,5 +114,18 @@ extension db {
         public func popTx(_ tx: Tx) throws {
             if txStack.removeLast() != tx { throw BasicError("Invalid tx") }
         }
+    }
+
+    public static func convertParams(_ sql: String) -> String {
+        let ss = sql.components(separatedBy: "?")
+        var result = ss[0]
+        var n = 1
+        
+        for s in ss[1...] {
+            result = result + "$\(n)" + s
+            n += 1
+        }
+
+        return result
     }
 }

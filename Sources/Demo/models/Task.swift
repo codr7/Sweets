@@ -4,7 +4,7 @@ extension demo {
     public class Task: Model {
         public var tables: [db.Table] { [cx.schema.tasks] }
         
-        public var id: UInt64? {
+        public var id: db.Sequence.Value? {
             get { record[cx.schema.taskId] }
             set(v) { record[cx.schema.taskId] = v }
         }

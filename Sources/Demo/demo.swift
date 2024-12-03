@@ -31,6 +31,13 @@ public extension demo {
         try await p.store()
 
         try await p.add(member: e, role: r)
+
+        var m = Milestone(p)
+        m.name = "Default"
+        try await m.store()
+        
+        //var t = Task(p)
+        //try
         
         try await tx.rollback()
         try await cx.db.disconnect()

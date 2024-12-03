@@ -61,7 +61,7 @@ extension db {
             for h in afterInsert { try await h(rec, data) }
         }
 
-        public func update(_ rec: Record, _ cx: Cx) async throws {
+        public func update(_ rec: inout Record, _ cx: Cx, _ data: Any?) async throws {
             let cvs = _columns.map({($0, rec[$0])}).filter({$0.1 != nil})
             var wcs: [Condition] = []
 
@@ -87,8 +87,8 @@ extension db {
         public func store(_ rec: inout Record,
                           _ cx: Cx,
                           _ data: Any? = nil) async throws {
-            if rec.isStored(_columns, cx) { try await update(rec, cx) }
-            else { try await insert(&rec, cx) }
+            if rec.isStored(_columns, cx) { try await update(&rec, cx, data) }
+            else { try await insert(&rec, cx, data) }
         }
 
         public func sync(_ cx: Cx) async throws {
