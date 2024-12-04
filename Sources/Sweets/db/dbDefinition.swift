@@ -25,11 +25,11 @@ extension db {
     }
 
     public static func createSql(_ d: IDefinition) -> String {
-        "CREATE \(d.definitionType) \(d.nameSql)"
+        "CREATE \(d.definitionType) IF NOT EXISTS \(d.nameSql)"
     }
 
     public static func dropSql(_ d: IDefinition) -> String {
-        "DROP \(d.definitionType) \(d.nameSql)"
+        "DROP \(d.definitionType) IF EXISTS \(d.nameSql)"
     }
 }
 

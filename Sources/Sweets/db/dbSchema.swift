@@ -9,7 +9,7 @@ extension db {
         }
         
         public func drop(_ cx: Cx) async throws {
-            for d in definitions { try await d.drop(cx) }
+            for d in definitions.reversed() { try await d.drop(cx) }
         }
 
         public func register(_ definitions: Definition...) {

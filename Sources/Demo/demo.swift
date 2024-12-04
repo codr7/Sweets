@@ -12,7 +12,8 @@ public extension demo {
         
         let cx = Cx(db)
         let tx = try await cx.db.startTx()
-        try await cx.schema.sync(cx.db)
+        try await cx.schema.drop(cx.db)
+        try await cx.schema.create(cx.db)
 
         var e = Employee(cx)
         e.name1 = "Andreas"
@@ -41,9 +42,10 @@ public extension demo {
         
         var t = Task(m)
         try await t.store()
+        try await tx.commit()
         
-        try await tx.rollback()
         try await cx.db.disconnect()
+        try http.start()
     }
 
     static func main() async throws {

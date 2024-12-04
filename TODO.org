@@ -1,5 +1,8 @@
-* http
-** add nio http server
+* fix http
+** drop SSL or fix errors
+** extract Server type
+
+curl --insecure https://\(hostFormatted):\(port)/hello-world"
 
 * dom
 ** add input
