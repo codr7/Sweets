@@ -16,21 +16,6 @@ extension db {
                 self.rows = rows
             }
 
-            /*
-            public subscript<T>(column: Column<T>) -> PostgresData? {
-                get {
-                    if let i = query.valueLookup[column.valueId] { (row![i] as! T) }
-                    else { nil }
-                }
-            }*/
-
-            /*            public subscript(value: Value) -> PostgresData? {
-                get {
-                    if let i = query.valueLookup[value.valueId] { row![data: i] }
-                    else { nil }
-                }
-            }*/
-
             public subscript<T>(value: any TypedValue<T>) -> T? {
                 get {
                     if let i = query.valueLookup[value.valueId] {
@@ -83,7 +68,8 @@ extension db {
             if !conditions.isEmpty {
                 s += " WHERE \(foldAnd(conditions).conditionSql)"
             }
-            
+
+            if let v = limit { s += " LIMIT \(v)" }
             return s
         }
 

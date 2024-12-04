@@ -32,7 +32,6 @@ extension demo {
               .WHERE(
                 try cx.schema.employeeRoleEmployee == self.record,
                 try cx.schema.employeeRoleRole == role.record)
-              .LIMIT(1)
               .EXISTS
 
             let r = try await db.Query().SELECT(c).exec(cx.db)
