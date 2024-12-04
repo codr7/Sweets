@@ -37,7 +37,7 @@ extension demo {
 
             let r = try await db.Query().SELECT(c).exec(cx.db)
             if !(try await r.fetch()) { throw db.BasicError("Fetch failed") }
-            return r[c]!.bool!
+            return r[c]!
             
         }
     }

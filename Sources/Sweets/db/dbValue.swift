@@ -1,3 +1,5 @@
+import PostgresNIO
+
 extension db {
     public typealias ValueId = ObjectIdentifier
     
@@ -9,7 +11,13 @@ extension db {
         func encode(_ val: Any) -> any Encodable
     }
 
-    public class CustomValue: Value {
+    public protocol TypedValue<T>: Value {
+        associatedtype T
+        func decode(_ value: PostgresCell) throws -> T
+    }
+    
+    public class CustomValue<T: PostgresDecodable>: TypedValue {
+        public typealias T = T
         public let valueSql: String
         public let valueParams: [any Encodable]
 
@@ -19,6 +27,8 @@ extension db {
         }
 
         public var valueId: ValueId { ObjectIdentifier(self) }
+
+        public func decode(_ value: PostgresCell) throws -> T { try value.decode(T.self) } 
     }
 }
 
@@ -30,7 +40,10 @@ public extension db.Value {
     var paramSql: String { "?" }
     var valueParams: [any db.Encodable] { [] }
     func encode(_ val: Any) -> any db.Encodable { val as! any db.Encodable }
-    var EXISTS: db.Value { db.CustomValue("EXISTS (\(valueSql))", valueParams) }
+
+    var EXISTS: any db.TypedValue<Bool> {
+        db.CustomValue<Bool>("EXISTS (\(valueSql))", valueParams)
+    }
 }
 
 public extension [any db.Value] {

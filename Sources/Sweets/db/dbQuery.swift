@@ -24,13 +24,22 @@ extension db {
                 }
             }*/
 
-            public subscript(value: Value) -> PostgresData? {
+            /*            public subscript(value: Value) -> PostgresData? {
                 get {
                     if let i = query.valueLookup[value.valueId] { row![data: i] }
                     else { nil }
                 }
+            }*/
+
+            public subscript<T>(value: any TypedValue<T>) -> T? {
+                get {
+                    if let i = query.valueLookup[value.valueId] {
+                        try! value.decode(row![i])
+                    }
+                    else { nil }
+                }
             }
-            
+
             public func fetch() async throws -> Bool {
                 row = if let r = try await rows.next() { PostgresRandomAccessRow(r) }
                   else { nil }
