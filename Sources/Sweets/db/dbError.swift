@@ -1,8 +1,8 @@
 extension db {
-    class BasicError: CustomStringConvertible, Error, @unchecked Sendable {
-        let description: String
+    public class BasicError: CustomStringConvertible, Error, @unchecked Sendable {
+        public let description: String
         
-        init(_ description: String) {
+        public init(_ description: String) {
             self.description = description
         }
     }

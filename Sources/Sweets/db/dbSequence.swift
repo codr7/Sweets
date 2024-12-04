@@ -15,7 +15,6 @@ extension db {
         }
 
         public let definitionType = "SEQUENCE"
-
         public var dropSql: String { db.dropSql(self) }
         
         public func exists(_ cx: Cx) async throws -> Bool {
@@ -29,8 +28,7 @@ extension db {
         }
 
         public func next(_ cx: Cx) async throws -> Value {
-            print("name: \(name)")
-            return try await cx.queryValue("SELECT NEXTVAL('\"\(name)\"')", [])
+            try await cx.queryValue("SELECT NEXTVAL('\"\(name)\"')", [])
         }
     }
 }

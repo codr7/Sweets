@@ -25,7 +25,7 @@ extension demo {
 extension demo.IModel {
     @discardableResult
     mutating func store() async throws -> db.IModel {
-        for t in tables { try await t.store(&record, db, cx) }
+        for t in tables { try await t.store(&record, cx.db, cx) }
         return self
     }
 }

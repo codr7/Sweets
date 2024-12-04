@@ -15,7 +15,7 @@ extension db {
     }
 
     public static func foldAnd(_ conds: [Condition]) -> Condition {
-        conds[1...].reduce(conds[0], {$0 || $1})
+        conds[1...].reduce(conds[0], {$0 && $1})
     }
 
     public static func foldOr(_ conds: [Condition]) -> Condition {

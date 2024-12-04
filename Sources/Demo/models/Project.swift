@@ -16,6 +16,10 @@ extension demo {
 
         @discardableResult
         public func add(member: Employee, role: Role) async throws -> Project {
+            if !(try await member.has(role: role)) {
+                 try await member.add(role: role)
+            }
+            
             var pm = ProjectMember(self, member, role)
             try await pm.store()
             return self

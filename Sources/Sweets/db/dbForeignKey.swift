@@ -56,3 +56,11 @@ extension db {
 extension String {
     var capitalized: String { self.prefix(1).uppercased() + self.dropFirst() }
 }
+
+public func ==(_ left: db.ForeignKey, _ right: db.Record) throws -> db.Condition {
+    db.foldOr(try zip(left.columns, left.foreignColumns).map(
+                {(c, fc) in
+                    if let v = right[fc] { c == v }
+                    else { throw db.BasicError("Missing key: \(c)") }
+                }))
+}

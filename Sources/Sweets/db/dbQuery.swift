@@ -1,18 +1,53 @@
+import PostgresNIO
+
 extension db {
     public class Query: Condition, Value {
+        public class Result {
+            public let cx: Cx
+            public let query: Query
+            private var rows: PostgresRowSequence.AsyncIterator
+            private var row: PostgresRandomAccessRow?
+            
+            public init(_ cx: Cx,
+                        _ query: Query,
+                        _ rows: PostgresRowSequence.AsyncIterator) {
+                self.cx = cx
+                self.query = query
+                self.rows = rows
+            }
+
+            /*
+            public subscript<T>(column: Column<T>) -> PostgresData? {
+                get {
+                    if let i = query.valueLookup[column.valueId] { (row![i] as! T) }
+                    else { nil }
+                }
+            }*/
+
+            public subscript(value: Value) -> PostgresData? {
+                get {
+                    if let i = query.valueLookup[value.valueId] { row![data: i] }
+                    else { nil }
+                }
+            }
+            
+            public func fetch() async throws -> Bool {
+                row = if let r = try await rows.next() { PostgresRandomAccessRow(r) }
+                  else { nil }
+                
+                return row != nil
+            }
+        }
+        
         var conditions: [Condition] = []
+        var limit: Int?
         var sources: [Source] = []
+        var valueLookup: [ValueId:Int] = [:]
         var values: [Value] = []
 
         public init() {}
-
-        public var conditionParams: [any Encodable] {
-            params
-        }
-
-        public var conditionSql: String {
-            sql
-        }
+        public var conditionParams: [any Encodable] { params }
+        public var conditionSql: String { sql }
 
         public var params: [any Encodable] {
             var out: [any Encodable] = []
@@ -33,11 +68,8 @@ extension db {
         }
 
         public var sql: String {
-            var s = "SELECT \(values.sql)"
-
-            if !sources.isEmpty {
-                s += " FROM \(sources.sql)"
-            } 
+            var s = "SELECT \(values.isEmpty ? "NULL" : values.sql)" 
+            if !sources.isEmpty { s += " FROM \(sources.sql)" }
 
             if !conditions.isEmpty {
                 s += " WHERE \(foldAnd(conditions).conditionSql)"
@@ -46,28 +78,37 @@ extension db {
             return s
         }
 
-        public var valueParams: [any Encodable] {
-            params
+        public var valueId: ValueId { ObjectIdentifier(self) }
+        public var valueParams: [any Encodable] { params }
+        public var valueSql: String { sql }
+
+        public func exec(_ cx: Cx) async throws -> Result {
+            let rows = try await cx.queryRows(valueSql, valueParams)
+            return Result(cx, self, rows.makeAsyncIterator())
         }
 
-        public var valueSql: String {
-            sql
-        }
-
-        public func exec(_ cx: Cx) async throws {
-            _ = try await cx.query(valueSql, valueParams)
-        }
-
-        public func filter(_ args: Condition...) {
-            for c in args { conditions.append(c) }
-        }
-
-        public func from(_ args: Source...) {
+        public func FROM(_ args: Source...) -> Query {
             for s in args { sources.append(s) }
+            return self
         }
 
-        public func select(_ args: Value...) {
-            for v in args { values.append(v) }
+        public func LIMIT(_ value: Int?) -> Query {
+            limit = value
+            return self
+        }
+        
+        public func SELECT(_ args: Value...) -> Query {
+            for v in args {
+                valueLookup[v.valueId] = values.count
+                values.append(v)
+            }
+            
+            return self
+        }
+
+        public func WHERE(_ args: Condition...) -> Query {
+            for c in args { conditions.append(c) }
+            return self
         }
     }
 }

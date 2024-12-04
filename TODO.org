@@ -1,16 +1,10 @@
-* verify member role when adding project member
-** add table.exists
-*** finish Query
-**** add result functionality
-**** fetch(inout record)
+* http
+** add nio http server
 
 * dom
 ** add input
 ** add select from gappkit
 ** add button with onclick
-
-* http
-** add nio http server
 
 * db
 ** add indexes
@@ -27,3 +21,5 @@ extension RepeatMode {
   static var once: Self { .times(1) }
   static var never: Self { .times(0) }
 }
+
+sudo -u postgres psql

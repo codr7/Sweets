@@ -31,15 +31,10 @@ extension db {
             super.init(name, table)
         }
         
-        public let definitionType = "COLUMN"
-        
+        public let definitionType = "COLUMN"        
         public var id: ObjectIdentifier { ObjectIdentifier(self) }
-
         public var paramSql: String { "?" }
-
-        public func encode(_ value: Any) -> any Encodable {
-            value as! any Encodable
-        }
+        public func encode(_ value: Any) -> any Encodable { value as! any Encodable }
 
         public func equalValues(_ left: Any, _ right: Any) -> Bool {
             return left as! T == right as! T
@@ -57,6 +52,7 @@ extension db {
                                       """)
         }
 
+        public var valueId: ValueId { ObjectIdentifier(self) }
         public var valueParams: [any Encodable] { [] }
     }
 
