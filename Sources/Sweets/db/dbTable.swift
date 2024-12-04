@@ -62,6 +62,17 @@ extension db {
             for h in afterInsert { try await h(rec, data) }
         }
 
+        public func recordExists(_ condition: Condition, _ cx: Cx) async throws -> Bool{
+            let c = db.Query()
+              .FROM(self)
+              .WHERE(condition)
+              .EXISTS
+
+            let r = try await db.Query().SELECT(c).exec(cx)
+            if !(try await r.fetch()) { throw db.BasicError("Fetch failed") }
+            return r[c]!
+        }
+        
         public func update(_ rec: inout Record, _ cx: Cx, _ data: Any?) async throws {
             let cvs = _columns.map({($0, rec[$0])}).filter({$0.1 != nil})
             var wcs: [Condition] = []

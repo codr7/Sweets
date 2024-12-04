@@ -27,17 +27,10 @@ extension demo {
         }
 
         public func has(role: Role) async throws -> Bool {
-            let c = db.Query()
-              .FROM(cx.schema.employeeRoles)
-              .WHERE(
-                try cx.schema.employeeRoleEmployee == self.record,
-                try cx.schema.employeeRoleRole == role.record)
-              .EXISTS
-
-            let r = try await db.Query().SELECT(c).exec(cx.db)
-            if !(try await r.fetch()) { throw db.BasicError("Fetch failed") }
-            return r[c]!
-            
+            try await cx.schema.employeeRoles.recordExists(
+              cx.schema.employeeRoleEmployee == self.record &&
+                cx.schema.employeeRoleRole == role.record,
+              cx.db)
         }
     }
 
