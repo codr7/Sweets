@@ -87,3 +87,11 @@ extension db {
         }
     }
 }
+
+public func ==(_ left: db.Record, _ right: db.Record) -> Bool {
+    left.fields.allSatisfy(
+      {(c, lv) in
+          if let rv = right[c] { c.equalValues(lv, rv) }
+          else { false }
+      })
+}

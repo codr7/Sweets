@@ -1,7 +1,7 @@
 import PostgresNIO
 
 extension db {
-    public protocol Enum: CaseIterable, Equatable, RawRepresentable
+    public protocol Enum: CaseIterable, Equatable, RawRepresentable, PostgresDecodable
       where RawValue == String {
     }
 

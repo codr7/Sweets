@@ -20,6 +20,9 @@ public extension demo {
         e.email = "codr7@protonmail.com"
         try await e.store()
 
+        let le = try await cx.schema.employees.find(record: e.record, cx.db)!
+        assert(le == e.record)
+
         var r = Role(cx)
         r.name = "Tech Lead"
         try await r.store()

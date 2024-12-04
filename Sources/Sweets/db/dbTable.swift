@@ -42,6 +42,18 @@ extension db {
                                     [name])
         }
 
+        public func find(record: Record, _ cx: Cx) async throws -> Record? {
+            let r = try await Query()
+              .SELECT(columns)
+              .FROM(self)
+              .WHERE(primaryKey == record)
+              .exec(cx)
+
+            if !(try await r.fetch()) { return nil }
+            for c in columns { record[c] = r[c]! }
+            return record
+        }
+        
         public func insert(_ rec: inout Record,
                            _ cx: Cx,
                            _ data: Any? = nil) async throws {

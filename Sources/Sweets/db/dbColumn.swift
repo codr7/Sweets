@@ -2,7 +2,7 @@ import Foundation
 import PostgresNIO
 
 extension db {
-    public typealias Column<T> = BasicColumn<T> & IColumn where T: Equatable
+    public typealias Column<T> = BasicColumn<T> & IColumn where T: Equatable & PostgresDecodable
     
     public protocol IColumn: Value, ITableDefinition {
         var columnType: String {get}
@@ -17,7 +17,9 @@ extension db {
         func equalValues(_ left: Any, _ right: Any) -> Bool
     }
 
-    public class BasicColumn<T: Equatable>: BasicTableDefinition {
+    public class BasicColumn<T: Equatable & PostgresDecodable>:
+      BasicTableDefinition, TypedValue {
+        public typealias T = T
         public let defaultValue: Any?
         public let isNullable: Bool
         public let isPrimaryKey: Bool
@@ -54,6 +56,7 @@ extension db {
 
         public var valueId: ValueId { ObjectIdentifier(self) }
         public var valueParams: [any Encodable] { [] }
+        public var valueSql: String { "\(table.nameSql).\(nameSql)" }
     }
 
     public class BoolColumn: Column<Bool> {
@@ -244,7 +247,6 @@ public extension db.IColumn {
     }
 
     var dropSql: String { db.dropSql(self) }
-    var valueSql: String { "\(table.nameSql).\(nameSql)" }
 }
 
 extension [any db.IColumn] {

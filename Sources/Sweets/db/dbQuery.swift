@@ -19,9 +19,17 @@ extension db {
             public subscript<T>(value: any TypedValue<T>) -> T? {
                 get {
                     if let i = query.valueLookup[value.valueId] {
-                        try! value.decode(row![i])
+                        try! value.decode(row![i]) as! T
                     }
                     else { nil }
+                }
+            }
+
+            public subscript(value: any Value) -> Any? {
+                get {
+                    if let i = query.valueLookup[value.valueId] {
+                        try! value.decode(row![i])
+                    } else { nil }
                 }
             }
 
@@ -92,7 +100,7 @@ extension db {
             return self
         }
         
-        public func SELECT(_ args: Value...) -> Query {
+        public func SELECT(_ args: [Value]) -> Query {
             for v in args {
                 valueLookup[v.valueId] = values.count
                 values.append(v)
@@ -100,6 +108,8 @@ extension db {
             
             return self
         }
+
+        public func SELECT(_ args: Value...) -> Query { SELECT(args) }
 
         public func WHERE(_ args: Condition...) -> Query {
             for c in args { conditions.append(c) }
