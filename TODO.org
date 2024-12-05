@@ -1,8 +1,6 @@
 * fix http
-** drop SSL or fix errors
-** extract Server type
-
-curl --insecure https://\(hostFormatted):\(port)/hello-world"
+** add Server class with imp
+** add routes
 
 * dom
 ** add input

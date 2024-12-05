@@ -44,8 +44,8 @@ public extension demo {
         try await t.store()
         try await tx.commit()
         
+        try await http.start()
         try await cx.db.disconnect()
-        try http.start()
     }
 
     static func main() async throws {
